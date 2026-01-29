@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: SizedBox(
                 height: size.height * 0.3, // Takes 30% of screen height
                 child: Image.asset(
-                  'assets/images/login_illustration.png',
+                  'assets/logos/iv_login.png',
                   fit: BoxFit.contain,
                 ),
               ),

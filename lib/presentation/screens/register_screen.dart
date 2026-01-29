@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     size.height *
                     0.25, // Slightly smaller than login to fit more fields
                 child: Image.asset(
-                  'assets/images/register_illustration.png',
+                  'assets/logos/iv_sign.png',
                   fit: BoxFit.contain,
                 ),
               ),

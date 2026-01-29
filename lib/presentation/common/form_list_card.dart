@@ -39,7 +39,7 @@ class FormListCard extends StatelessWidget {
                 // Leading Icon (Document style)
                 // Using a container to mimic the colored icon asset in the screenshot
                 Image.asset(
-                  formItem.iconPath,
+                  'assets/logos/ic_doc.png',
                   width: 32,
                   height: 32,
                   errorBuilder: (context, error, stackTrace) => const Icon(

@@ -9,22 +9,22 @@ class HomeScreen extends StatelessWidget {
   final List<MenuItem> menuItems = const [
     MenuItem(
       title: 'Clubs',
-      imagePath: 'assets/images/clubs.png',
+      imagePath: 'assets/logos/iv_clubs.png',
       route: '/clubs',
     ),
     MenuItem(
       title: 'Inventory',
-      imagePath: 'assets/images/inventory.png',
+      imagePath: 'assets/logos/iv_inventory.png',
       route: '/inventory',
     ),
     MenuItem(
       title: 'Resources',
-      imagePath: 'assets/images/resources.png',
+      imagePath: 'assets/logos/iv_resources.png',
       route: '/resources',
     ),
     MenuItem(
       title: 'Forms',
-      imagePath: 'assets/images/forms.png',
+      imagePath: 'assets/logos/iv_forms.png',
       route: '/forms',
     ),
   ];
@@ -65,14 +65,14 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/logos/iitism_logo.png', height: 80),
+                Image.asset('assets/logos/iv_ism_logo.png', height: 80),
                 Container(
                   height: 60,
                   width: 1,
                   color: Colors.grey,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                 ),
-                Image.asset('assets/logos/nvcti_logo.png', height: 80),
+                Image.asset('assets/logos/iv_nvcti_logo.png', height: 80),
               ],
             ),
 

@@ -16,12 +16,10 @@ class _FormsScreenState extends State<FormsScreen> {
     const FormItem(
       title: 'Event Proposal Form',
       url: 'https://docs.google.com/forms/...',
-      iconPath: 'assets/icons/proposal_icon.png',
     ),
     const FormItem(
       title: 'Resource Booking Request',
       url: 'https://docs.google.com/forms/...',
-      iconPath: 'assets/icons/booking_icon.png',
     ),
   ];
 

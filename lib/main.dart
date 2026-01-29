@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nvcti/presentation/common/theme.dart';
-import 'package:nvcti/presentation/screens/home_screen.dart';
+import 'package:nvcti/presentation/screens/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: HomeScreen(),
+      home: RegisterScreen(),
     );
   }
 }
