@@ -3,16 +3,11 @@ import '../../domain/entities/achievement.dart';
 
 class AchievementModel extends Achievement {
   const AchievementModel({
-    required String title,
-    required String description,
-    required String imgUrl,
-    required String club,
-  }) : super(
-    title: title,
-    description: description,
-    imgUrl: imgUrl,
-    club: club,
-  );
+    required super.title,
+    required super.description,
+    required super.imgUrl,
+    required super.club,
+  });
 
   factory AchievementModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
