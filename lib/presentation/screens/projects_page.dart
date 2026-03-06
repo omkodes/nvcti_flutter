@@ -1,25 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../bloc/bloc/projects_bloc.dart';
 import '../../bloc/events/projects_event.dart';
 import '../../bloc/states/projects_state.dart';
 import '../../data/repositories/projects_repository_impl.dart';
 import '../../domain/usecases/get_projects.dart';
+import '../common/loading_card.dart';
 import '../common/project_item.dart';
-import 'loading_card.dart';
-
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final repository = ProjectsRepositoryImpl(firestore: FirebaseFirestore.instance);
+    final repository = ProjectsRepositoryImpl(
+      firestore: FirebaseFirestore.instance,
+    );
     final useCase = GetProjects(repository);
 
     return BlocProvider(
-      create: (context) => ProjectsBloc(getProjects: useCase)..add(FetchProjectsEvent()),
+      create: (context) =>
+          ProjectsBloc(getProjects: useCase)..add(FetchProjectsEvent()),
       child: Scaffold(
         backgroundColor: Colors.white, // @color/white
         body: const ProjectsView(),
@@ -42,7 +45,9 @@ class ProjectsView extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: TextField(
                     decoration: const InputDecoration(
                       hintText: "Search Projects...",
@@ -51,7 +56,9 @@ class ProjectsView extends StatelessWidget {
                       contentPadding: EdgeInsets.symmetric(vertical: 15),
                     ),
                     onChanged: (value) {
-                      context.read<ProjectsBloc>().add(SearchProjectsEvent(value));
+                      context.read<ProjectsBloc>().add(
+                        SearchProjectsEvent(value),
+                      );
                     },
                   ),
                 ),
@@ -65,7 +72,9 @@ class ProjectsView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: state.filteredProjects.length,
                         itemBuilder: (context, index) {
-                          return ProjectItem(project: state.filteredProjects[index]);
+                          return ProjectItem(
+                            project: state.filteredProjects[index],
+                          );
                         },
                       );
                     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nvcti/domain/entities/menu_item.dart';
 
 class MenuGridCard extends StatelessWidget {
@@ -14,6 +15,7 @@ class MenuGridCard extends StatelessWidget {
       color: Colors.white,
       child: InkWell(
         onTap: () {
+          context.go(item.route);
           // Navigator.pushNamed(context, item.route);
         },
         borderRadius: BorderRadius.circular(12),

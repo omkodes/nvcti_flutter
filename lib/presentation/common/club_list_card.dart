@@ -3,9 +3,8 @@ import 'package:nvcti/domain/entities/club.dart';
 
 class ClubListCard extends StatelessWidget {
   final Club club;
-  final VoidCallback onTap;
 
-  const ClubListCard({super.key, required this.club, required this.onTap});
+  const ClubListCard({super.key, required this.club});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class ClubListCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: onTap,
+          onTap: () {},
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.symmetric(

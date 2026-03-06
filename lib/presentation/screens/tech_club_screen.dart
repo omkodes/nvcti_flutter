@@ -1,62 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:nvcti/domain/entities/club.dart';
-import 'package:nvcti/presentation/common/club_list_card.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nvcti/bloc/bloc/club_bloc.dart';
+import 'package:nvcti/bloc/events/club_event.dart';
+import 'package:nvcti/bloc/states/club_state.dart';
+import 'package:nvcti/core/di/injection_container.dart';
 
-class TechClubsScreen extends StatefulWidget {
-  const TechClubsScreen({super.key});
+import '../common/club_list_card.dart';
 
-  @override
-  State<TechClubsScreen> createState() => _TechClubsScreenState();
-}
-
-class _TechClubsScreenState extends State<TechClubsScreen> {
-  // In a clean architecture with BLoC/Provider, this state would be handled
-  // by the State Management layer. For this UI demo, we fetch locally.
-  // final ClubRepositoryImpl _repository = ClubRepositoryImpl();
-  List<Club> _clubs = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadClubs();
-  }
-
-  Future<void> _loadClubs() async {
-    // final clubs = await _repository.getTechClubs();
-    // if (mounted) {
-    //   setState(() {
-    //     _clubs = clubs;
-    //     _isLoading = false;
-    //   });
-    // }
-  }
+class TechClubScreen extends StatelessWidget {
+  const TechClubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor:
-          Colors.grey[100], // Light grey background from screenshot
-      appBar: AppBar(
-        title: const Text('Tech Clubs'),
-        centerTitle: true,
-        // The default back button will appear automatically
+    return BlocProvider(
+      // Access the bloc instance from the Injector and trigger the load event
+      create: (context) => Injector.get<ClubBloc>()..add(LoadClubsEvent()),
+      child: Scaffold(
+        backgroundColor: Colors.grey[100], // Light grey background
+        appBar: AppBar(
+          title: const Text('Tech Clubs'),
+          centerTitle: true,
+          // Explicitly adding the back button for GoRouter compatibility
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop(); // Returns to previous screen if stack exists
+              } else {
+                context.go('/'); // Forced fallback to Home screen
+              }
+            },
+          ),
+        ),
+        body: BlocBuilder<ClubBloc, ClubState>(
+          builder: (context, state) {
+            if (state is ClubLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is ClubLoaded) {
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: state.clubs.length,
+                itemBuilder: (context, index) {
+                  return ClubListCard(club: state.clubs[index]);
+                },
+              );
+            }
+
+            if (state is ClubError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    state.message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              );
+            }
+
+            return const Center(child: Text("No clubs found."));
+          },
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: _clubs.length,
-              itemBuilder: (context, index) {
-                return ClubListCard(
-                  club: _clubs[index],
-                  onTap: () {
-                    // Navigate to Club Details
-                    // Navigator.pushNamed(context, '/club_details', arguments: _clubs[index]);
-                  },
-                );
-              },
-            ),
     );
   }
 }
