@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:nvcti/domain/entities/inventory_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nvcti/bloc/bloc/inventory_bloc.dart';
+import 'package:nvcti/bloc/events/inventory_event.dart';
+import 'package:nvcti/bloc/states/inventory_state.dart';
 import 'package:nvcti/presentation/common/inventory_card.dart';
+
+import '../../core/di/injection_container.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -10,119 +16,99 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  // Mock Data
-  final List<InventoryItem> _allItems = const [
-    InventoryItem(
-      id: '1',
-      name: 'RTC Module',
-      description:
-          'A Real-Time Clock (RTC) module that keeps track of the current time and date, even when the main power is off.',
-      quantity: 15,
-    ),
-    InventoryItem(
-      id: '2',
-      name: 'Flex Sensor',
-      description:
-          'A sensor that changes its resistance as it is bent, used for measuring angles or detecting bending motion.',
-      quantity: 15,
-    ),
-    InventoryItem(
-      id: '3',
-      name: 'PCB Screw Terminal Block',
-      description:
-          'Terminal blocks that screw onto a PCB, providing a secure and removable connection for wires.',
-      quantity: 250,
-    ),
-    InventoryItem(
-      id: '4',
-      name: 'PIR Motion Detector Module',
-      description:
-          'A Passive Infrared (PIR) sensor module used to detect motion by sensing changes in infrared radiation.',
-      quantity: 30,
-    ),
-  ];
-
-  // State for filtering
-  List<InventoryItem> _filteredItems = [];
   final TextEditingController _searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _filteredItems = _allItems; // Initial state shows all
-  }
-
-  void _runFilter(String keyword) {
-    List<InventoryItem> results = [];
-    if (keyword.isEmpty) {
-      results = _allItems;
-    } else {
-      results = _allItems
-          .where(
-            (item) => item.name.toLowerCase().contains(keyword.toLowerCase()),
-          )
-          .toList();
-    }
-    setState(() {
-      _filteredItems = results;
-    });
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Inventory"),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
-          onPressed: () => Navigator.pop(context),
+    return BlocProvider(
+      create: (context) =>
+          Injector.get<InventoryBloc>()..add(LoadInventoryEvent()),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Inventory"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          // --- SEARCH BAR ---
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30), // Pill shape
-                border: Border.all(color: Colors.grey.shade300),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+        body: Column(
+          children: [
+            // --- SEARCH BAR ---
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: "Search Inventory...",
+                    prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 14),
                   ),
-                ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _runFilter,
-                decoration: const InputDecoration(
-                  hintText: "Search Inventory...",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),
-          ),
 
-          // --- LIST VIEW ---
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: _filteredItems.length,
-              itemBuilder: (context, index) {
-                return InventoryCard(item: _filteredItems[index]);
-              },
+            // --- LIST VIEW WITH BLOCCONSUMER ---
+            Expanded(
+              child: BlocConsumer<InventoryBloc, InventoryState>(
+                // 1. LISTENER: Use this for side effects (popups, navigation)
+                listener: (context, state) {
+                  if (state is InventoryError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                // 2. BUILDER: Use this to rebuild the UI
+                builder: (context, state) {
+                  if (state is InventoryLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is InventoryLoaded) {
+                    final filteredItems = state.items.where((item) {
+                      final query = _searchController.text.toLowerCase();
+                      return item.name.toLowerCase().contains(query);
+                    }).toList();
+
+                    if (filteredItems.isEmpty) {
+                      return const Center(
+                        child: Text("No items match your search."),
+                      );
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) =>
+                          InventoryCard(item: filteredItems[index]),
+                    );
+                  }
+
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

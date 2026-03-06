@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nvcti/bloc/bloc/club_bloc.dart';
+import 'package:nvcti/bloc/bloc/inventory_bloc.dart';
 import 'package:nvcti/data/datasources/remote_datasource/club_remote_data_source.dart';
+import 'package:nvcti/data/datasources/remote_datasource/inventory_remote_data_source.dart';
 import 'package:nvcti/data/repositories/club_repository_impl.dart';
 import 'package:nvcti/domain/repositories/club_repository.dart';
 import 'package:nvcti/domain/usecases/get_clubs.dart';
@@ -18,6 +20,15 @@ class Injector {
     // --- Data Sources ---
     _getIt.registerLazySingleton<ClubRemoteDataSource>(
       () => ClubRemoteDataSourceImpl(firestore: _getIt<FirebaseFirestore>()),
+    );
+    // Add these to Injector.setup()
+    _getIt.registerLazySingleton<InventoryRemoteDataSource>(
+      () =>
+          InventoryRemoteDataSourceImpl(firestore: _getIt<FirebaseFirestore>()),
+    );
+
+    _getIt.registerFactory<InventoryBloc>(
+      () => InventoryBloc(dataSource: _getIt<InventoryRemoteDataSource>()),
     );
 
     // --- Repositories ---
