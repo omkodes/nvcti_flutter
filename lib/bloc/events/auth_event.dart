@@ -17,17 +17,12 @@ class RegisterRequested extends AuthEvent {
   final String name;
   final String email;
   final String password;
-  final String mobileNumber; // Add this line
+  final String mobileNumber;
 
-  RegisterRequested(
-    this.name,
-    this.email,
-    this.password,
-    this.mobileNumber,
-  ); // Update constructor
+  RegisterRequested(this.name, this.email, this.password, this.mobileNumber);
 
   @override
-  List<Object> get props => [name, email, password, mobileNumber]; // Update props
+  List<Object> get props => [name, email, password, mobileNumber];
 }
 
 class ForgotPasswordRequested extends AuthEvent {
@@ -35,4 +30,16 @@ class ForgotPasswordRequested extends AuthEvent {
   ForgotPasswordRequested(this.email);
   @override
   List<Object> get props => [email];
+}
+
+// NEW: Resend verification email event
+class ResendVerificationEmailRequested extends AuthEvent {
+  final String email;
+  final String password;
+  ResendVerificationEmailRequested({
+    required this.email,
+    required this.password,
+  });
+  @override
+  List<Object> get props => [email, password];
 }

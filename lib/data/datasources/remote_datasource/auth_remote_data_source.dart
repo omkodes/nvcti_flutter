@@ -8,10 +8,17 @@ class AuthRemoteDataSource {
 
   Future<void> login(String email, String password) async {
     try {
-      await firebaseAuth.signInWithEmailAndPassword(
+      final credential = await firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Block login if email is not verified
+      if (credential.user != null && !credential.user!.emailVerified) {
+        // Sign them back out so they can't access the app
+        await firebaseAuth.signOut();
+        throw Exception('email-not-verified');
+      }
     } on FirebaseAuthException catch (e) {
       throw Exception(_mapFirebaseErrorCode(e.code));
     }
@@ -29,10 +36,13 @@ class AuthRemoteDataSource {
           .createUserWithEmailAndPassword(email: email, password: password);
       await credential.user?.updateDisplayName(name);
 
-      // 2. Extract admission number from email (e.g., "20JE0000@iitism.ac.in" -> "20JE0000")
+      // 2. Send email verification
+      await credential.user?.sendEmailVerification();
+
+      // 3. Extract admission number from email (e.g., "20JE0000@iitism.ac.in" -> "20JE0000")
       String admissionNumber = email.split('@').first.toUpperCase();
 
-      // 3. Save extra user details to Firestore
+      // 4. Save extra user details to Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(credential.user!.uid)
@@ -41,7 +51,11 @@ class AuthRemoteDataSource {
             'userEmail': email,
             'userContact': mobileNumber,
             'userAdmNo': admissionNumber,
+            'emailVerified': false,
           });
+
+      // 5. Sign out immediately — user must verify email before logging in
+      await firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
       print("🔥 FIREBASE REGISTER ERROR CODE: ${e.code}");
       throw Exception(_mapFirebaseErrorCode(e.code));
@@ -63,6 +77,8 @@ class AuthRemoteDataSource {
         return 'The password provided is too weak.';
       case 'invalid-email':
         return 'The email address is badly formatted.';
+      case 'email-not-verified':
+        return 'Please verify your email before logging in. Check your inbox.';
       default:
         return 'An undefined Error happened. Please try again.';
     }
@@ -75,6 +91,21 @@ class AuthRemoteDataSource {
       throw Exception(_mapFirebaseErrorCode(e.code));
     } catch (e) {
       throw Exception('An unexpected error occurred.');
+    }
+  }
+
+  Future<void> resendVerificationEmail(String email, String password) async {
+    try {
+      final credential = await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (credential.user != null && !credential.user!.emailVerified) {
+        await credential.user!.sendEmailVerification();
+        await firebaseAuth.signOut();
+      }
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_mapFirebaseErrorCode(e.code));
     }
   }
 }

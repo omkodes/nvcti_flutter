@@ -8,6 +8,11 @@ abstract class AuthRepository {
     required String mobileNumber,
   });
 
-  // --- NEW: Add the forgot password contract ---
   Future<void> sendPasswordResetEmail({required String email});
+
+  // NEW: Resend verification email
+  Future<void> resendVerificationEmail({
+    required String email,
+    required String password,
+  });
 }

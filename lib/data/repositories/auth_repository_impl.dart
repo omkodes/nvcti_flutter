@@ -21,9 +21,17 @@ class AuthRepositoryImpl implements AuthRepository {
     return await remoteDataSource.register(name, email, password, mobileNumber);
   }
 
-  // --- NEW: Implement the forgot password logic ---
   @override
   Future<void> sendPasswordResetEmail({required String email}) async {
     return await remoteDataSource.sendPasswordResetEmail(email);
+  }
+
+  // NEW
+  @override
+  Future<void> resendVerificationEmail({
+    required String email,
+    required String password,
+  }) async {
+    return await remoteDataSource.resendVerificationEmail(email, password);
   }
 }

@@ -24,3 +24,28 @@ class AuthPasswordResetSuccess extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+// NEW: Fired after successful registration — user must verify email
+class AuthRegistrationSuccess extends AuthState {
+  final String message;
+  AuthRegistrationSuccess(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
+// NEW: Fired when user tries to log in without verifying email
+class AuthEmailNotVerified extends AuthState {
+  final String email;
+  final String password;
+  AuthEmailNotVerified({required this.email, required this.password});
+  @override
+  List<Object> get props => [email, password];
+}
+
+// NEW: Fired after resend verification email succeeds
+class AuthVerificationEmailResent extends AuthState {
+  final String message;
+  AuthVerificationEmailResent(this.message);
+  @override
+  List<Object> get props => [message];
+}
