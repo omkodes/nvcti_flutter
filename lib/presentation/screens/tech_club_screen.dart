@@ -14,21 +14,19 @@ class TechClubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // Access the bloc instance from the Injector and trigger the load event
       create: (context) => Injector.get<ClubBloc>()..add(LoadClubsEvent()),
       child: Scaffold(
         backgroundColor: Colors.grey[100], // Light grey background
         appBar: AppBar(
           title: const Text('Tech Clubs'),
           centerTitle: true,
-          // Explicitly adding the back button for GoRouter compatibility
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 20),
             onPressed: () {
               if (context.canPop()) {
                 context.pop(); // Returns to previous screen if stack exists
               } else {
-                context.go('/'); // Forced fallback to Home screen
+                context.go('/');
               }
             },
           ),

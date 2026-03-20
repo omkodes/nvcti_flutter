@@ -13,8 +13,8 @@ class ClubModel extends Club {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return ClubModel(
       id: doc.id,
-      name: data['name'] ?? '',
-      logoPath: data['logoPath'] ?? '',
+      name: data['clubName'] ?? 'No Name',
+      logoPath: data['logoUrl'] ?? '',
     );
   }
 

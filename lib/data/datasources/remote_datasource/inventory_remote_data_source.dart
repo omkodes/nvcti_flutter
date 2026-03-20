@@ -12,7 +12,7 @@ class InventoryRemoteDataSourceImpl implements InventoryRemoteDataSource {
 
   @override
   Future<List<InventoryModel>> fetchInventory() async {
-    final snapshot = await firestore.collection('inventory').get();
+    final snapshot = await firestore.collection('InventoryData').get();
     return snapshot.docs
         .map((doc) => InventoryModel.fromFirestore(doc))
         .toList();

@@ -11,12 +11,26 @@ class InventoryModel extends InventoryItem {
   });
 
   factory InventoryModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
+
+    // Mimicking the Kotlin 'when' logic for type safety
+    final quantityField = data['itemQuantityAvailable'];
+    String quantityString;
+
+    if (quantityField is num) {
+      // Handles both int (Long) and double
+      quantityString = quantityField.toString();
+    } else if (quantityField is String) {
+      quantityString = quantityField;
+    } else {
+      quantityString = "0";
+    }
+
     return InventoryModel(
       id: doc.id,
-      name: data['name'] ?? '',
-      description: data['description'] ?? '',
-      quantity: data['quantity'] ?? 0,
+      name: data['itemName'] ?? '',
+      description: data['itemDescription'] ?? '',
+      quantity: quantityString,
     );
   }
 }

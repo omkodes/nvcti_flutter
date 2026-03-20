@@ -13,7 +13,7 @@ class ClubRemoteDataSourceImpl implements ClubRemoteDataSource {
   @override
   Future<List<ClubModel>> fetchClubs() async {
     try {
-      final querySnapshot = await firestore.collection('clubs').get();
+      final querySnapshot = await firestore.collection('TechClubs').get();
       return querySnapshot.docs
           .map((doc) => ClubModel.fromFirestore(doc))
           .toList();

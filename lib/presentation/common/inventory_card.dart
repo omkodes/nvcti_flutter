@@ -62,7 +62,7 @@ class InventoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildQtyBadge(int qty) {
+  Widget _buildQtyBadge(String qty) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

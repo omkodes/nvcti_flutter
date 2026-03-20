@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nvcti/domain/entities/club.dart';
 
@@ -43,13 +44,9 @@ class ClubListCard extends StatelessWidget {
                     color: Colors.white, // Ensure logo sits on white
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Image.asset(
-                    club.logoPath,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Fallback if asset is missing during dev
-                      return const Icon(Icons.group, color: Colors.grey);
-                    },
+                  child: CachedNetworkImage(
+                    imageUrl: club.logoPath,
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
                 const SizedBox(width: 16),
