@@ -7,6 +7,9 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? suffixIcon;
 
+  // 1. Add the validator variable
+  final String? Function(String?)? validator;
+
   const CustomTextField({
     super.key,
     required this.hintText,
@@ -14,6 +17,7 @@ class CustomTextField extends StatelessWidget {
     this.isPassword = false,
     this.controller,
     this.suffixIcon,
+    this.validator,
   });
 
   @override
@@ -24,9 +28,10 @@ class CustomTextField extends StatelessWidget {
         color: Colors.grey[100], // Light grey background like screenshot
         borderRadius: BorderRadius.circular(8),
       ),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         obscureText: isPassword,
+        validator: validator, // 4. Pass the validator here
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),

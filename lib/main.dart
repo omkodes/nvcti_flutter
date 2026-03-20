@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nvcti/bloc/bloc/auth_bloc.dart';
+import 'package:nvcti/bloc/bloc/booking_bloc.dart';
 import 'package:nvcti/core/di/injection_container.dart';
 import 'package:nvcti/core/navigation/app_router.dart';
 import 'package:nvcti/firebase_options.dart';
@@ -20,10 +23,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: AppRouter.router,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => Injector.get<AuthBloc>()),
+        // ADD THIS LINE FOR YOUR RESOURCES SCREEN:
+        BlocProvider<BookingBloc>(create: (_) => Injector.get<BookingBloc>()),
+        // You can also add your ClubBloc and InventoryBloc here if you are testing them!
+      ],
+      child: MaterialApp.router(
+        routerConfig: AppRouter.router,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+      ),
     );
   }
 }

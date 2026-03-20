@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nvcti/domain/entities/menu_item.dart';
 import 'package:nvcti/presentation/common/menu_grid_card.dart';
 
@@ -38,9 +39,16 @@ class HomeScreen extends StatelessWidget {
           icon: const Icon(Icons.menu),
           onPressed: () {}, // Open Drawer
         ),
+        // Inside HomeScreen's AppBar:
         actions: [
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              // Just push to /profile. GoRouter will intercept and route to /login if needed.
+              context.push('/profile');
+            },
+          ),
           const SizedBox(width: 8),
         ],
       ),

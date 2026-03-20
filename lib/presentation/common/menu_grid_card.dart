@@ -15,7 +15,7 @@ class MenuGridCard extends StatelessWidget {
       color: Colors.white,
       child: InkWell(
         onTap: () {
-          context.go(item.route);
+          context.push(item.route);
           // Navigator.pushNamed(context, item.route);
         },
         borderRadius: BorderRadius.circular(12),
