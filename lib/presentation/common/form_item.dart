@@ -18,6 +18,7 @@ class FormItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
+      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
@@ -30,7 +31,7 @@ class FormItem extends StatelessWidget {
           ),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.download, color: Colors.blue),
+          icon: const Icon(Icons.drive_file_move_outline, color: Colors.blue),
           onPressed: () {
             if (form.downloadLink.isNotEmpty) {
               _launchUrl(form.downloadLink);

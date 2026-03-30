@@ -9,6 +9,7 @@ import '../../data/repositories/achievements_repository_impl.dart';
 import '../../domain/usecases/get_achievements.dart';
 import '../common/achievement_item.dart';
 import '../common/loading_card.dart';
+import 'package:go_router/go_router.dart';
 
 class AchievementsPage extends StatelessWidget {
   const AchievementsPage({super.key});
@@ -26,6 +27,14 @@ class AchievementsPage extends StatelessWidget {
             ..add(FetchAchievementsEvent()),
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Achievements"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+        ),
         body: const AchievementsView(),
       ),
     );
@@ -33,7 +42,7 @@ class AchievementsPage extends StatelessWidget {
 }
 
 class AchievementsView extends StatelessWidget {
-  const AchievementsView({Key? key}) : super(key: key);
+  const AchievementsView({super.key});
 
   @override
   Widget build(BuildContext context) {

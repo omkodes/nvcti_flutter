@@ -9,6 +9,7 @@ import '../../data/repositories/projects_repository_impl.dart';
 import '../../domain/usecases/get_projects.dart';
 import '../common/loading_card.dart';
 import '../common/project_item.dart';
+import 'package:go_router/go_router.dart';
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
@@ -24,7 +25,15 @@ class ProjectsPage extends StatelessWidget {
       create: (context) =>
           ProjectsBloc(getProjects: useCase)..add(FetchProjectsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white, // @color/white
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Projects"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+        ),
         body: const ProjectsView(),
       ),
     );

@@ -22,6 +22,9 @@ import 'package:nvcti/domain/usecases/get_bookings.dart';
 import 'package:nvcti/domain/usecases/get_clubs.dart';
 import 'package:nvcti/domain/usecases/resendVerificationEmailUseCase.dart';
 
+import '../../data/repositories/user_repository_impl.dart';
+import '../../domain/repositories/user_repository.dart';
+
 class Injector {
   static final GetIt _getIt = GetIt.instance;
 
@@ -55,6 +58,9 @@ class Injector {
     );
     _getIt.registerLazySingleton<BookingRepository>(
       () => BookingRepositoryImpl(),
+    );
+    _getIt.registerLazySingleton<UserRepository>(
+          () => UserRepositoryImpl(firestore: _getIt<FirebaseFirestore>()),
     );
 
     // --- Use Cases ---
@@ -100,6 +106,7 @@ class Injector {
       () => BookingBloc(
         getBookings: _getIt<GetBookings>(),
         addBooking: _getIt<AddBooking>(),
+        userRepository: _getIt<UserRepository>(),
       ),
     );
   }

@@ -3,23 +3,21 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nvcti/presentation/screens/about_us_screen.dart';
+import 'package:nvcti/presentation/screens/achievements_page.dart';
 import 'package:nvcti/presentation/screens/booking_form_page.dart';
+import 'package:nvcti/presentation/screens/developer_info_screen.dart';
 import 'package:nvcti/presentation/screens/forgot_password_screen.dart';
 import 'package:nvcti/presentation/screens/forms_page.dart';
 import 'package:nvcti/presentation/screens/history_page.dart';
 import 'package:nvcti/presentation/screens/home_screen.dart';
 import 'package:nvcti/presentation/screens/inventory_screen.dart';
 import 'package:nvcti/presentation/screens/login_screen.dart';
+import 'package:nvcti/presentation/screens/profile_screen.dart';
+import 'package:nvcti/presentation/screens/projects_page.dart';
 import 'package:nvcti/presentation/screens/register_screen.dart';
 import 'package:nvcti/presentation/screens/tech_club_screen.dart';
 
-// Placeholder screens for compilation - replace these with your actual imports later
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Profile')));
-}
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -87,6 +85,22 @@ class AppRouter {
       GoRoute(
         path: '/resources',
         builder: (context, state) => const ResourceBookingForm(),
+      ),
+      GoRoute(
+        path: '/projects',
+        builder: (context, state) => const ProjectsPage(),
+      ),
+      GoRoute(
+        path: '/achievements',
+        builder: (context, state) => const AchievementsPage(),
+      ),
+      GoRoute(
+        path: '/aboutUs',
+        builder: (context, state) => const AboutUsScreen(),
+      ),
+      GoRoute(
+        path: '/developer',
+        builder: (context, state) => const DeveloperInfoScreen(),
       ),
     ],
   );

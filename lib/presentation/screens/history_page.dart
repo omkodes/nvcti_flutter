@@ -5,10 +5,12 @@ import '../../bloc/bloc/booking_bloc.dart';
 import '../../bloc/events/booking_event.dart';
 import '../../bloc/states/booking_state.dart';
 import '../../data/repositories/booking_repository_impl.dart';
+import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/usecases/add_booking.dart';
 import '../../domain/usecases/get_bookings.dart';
 import '../common/booking_history_item.dart';
 import '../common/loading_card.dart';
+import 'package:go_router/go_router.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -16,14 +18,23 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = BookingRepositoryImpl();
+    final userRepository = UserRepositoryImpl();
     final getBookingsUseCase = GetBookings(repository);
     final addBookingUseCase = AddBooking(repository);
 
     return BlocProvider(
       create: (context) => BookingBloc(getBookings: getBookingsUseCase,
-          addBooking: addBookingUseCase)..add(FetchBookingsEvent()),
-      child: const Scaffold(
+          addBooking: addBookingUseCase, userRepository: userRepository)..add(FetchBookingsEvent()),
+      child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("History"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+        ),
         body: HistoryView(),
       ),
     );
@@ -35,7 +46,6 @@ class HistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Current user filtering logic like in Kotlin
     final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
 
     return BlocBuilder<BookingBloc, BookingState>(

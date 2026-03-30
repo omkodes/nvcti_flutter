@@ -6,7 +6,6 @@ import 'package:nvcti/presentation/common/menu_grid_card.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  // Mock data - In a real app, this would come from a Repository via a BLoC/Provider
   final List<MenuItem> menuItems = const [
     MenuItem(
       title: 'Clubs',
@@ -35,11 +34,6 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {}, // Open Drawer
-        ),
-        // Inside HomeScreen's AppBar:
         actions: [
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
           IconButton(
@@ -50,26 +44,84 @@ class HomeScreen extends StatelessWidget {
             },
           ),
           const SizedBox(width: 8),
-        ],
+          ]
       ),
+
+          drawer: Drawer(
+            child: Container(
+              color: Colors.white,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    margin: EdgeInsets.zero,
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: Image.asset(
+                      'assets/logos/iv_app_banner.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+
+                  ListTile(
+                    leading: const Icon(Icons.group),
+                    title: const Text('Tech Clubs'),
+                    onTap: () {
+                      context.go('/clubs');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.work),
+                    title: const Text('Projects'),
+                    onTap: () {
+                      context.go('/projects');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.emoji_events),
+                    title: const Text('Achievements'),
+                    onTap: () {
+                      context.go('/achievements');
+                    },
+                  ),
+
+                  const Divider(),
+
+                  ListTile(
+                    leading: const Icon(Icons.info),
+                    title: const Text('About Us'),
+                    onTap: () {
+                      context.go('/aboutUs');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.developer_mode),
+                    title: const Text('Developer Contact'),
+                    onTap: () {
+                      context.go('/developer');
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Header Text
             Text(
               'Naresh\nVashisht Centre For\nTinkering & Innovation',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                height: 1.2, // Adjust line height for the "stacked" look
+                height: 1.2,
                 color: Theme.of(context).primaryColor,
               ),
             ),
             const SizedBox(height: 30),
 
-            // Logos Row
-            // NOTE: Replace standard Icons with your specific Image.asset() logos
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -86,17 +138,16 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // Grid Section
             GridView.builder(
               shrinkWrap: true,
               physics:
-                  const NeverScrollableScrollPhysics(), // Disable internal scrolling
+                  const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 childAspectRatio:
-                    0.85, // Adjusts the height/width ratio of cards
+                    0.85,
               ),
               itemCount: menuItems.length,
               itemBuilder: (context, index) {

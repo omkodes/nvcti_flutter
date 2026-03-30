@@ -8,6 +8,7 @@ import '../../data/repositories/forms_repository_impl.dart';
 import '../../domain/usecases/get_forms.dart';
 import '../common/form_item.dart';
 import '../common/loading_card.dart';
+import 'package:go_router/go_router.dart';
 
 class FormsPage extends StatelessWidget {
   const FormsPage({super.key});
@@ -21,6 +22,14 @@ class FormsPage extends StatelessWidget {
       create: (context) => FormsBloc(getForms: useCase)..add(FetchFormsEvent()),
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Forms"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+        ),
         body: const FormsView(),
       ),
     );

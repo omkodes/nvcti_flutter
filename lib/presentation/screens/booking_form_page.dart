@@ -6,6 +6,8 @@ import '../../bloc/bloc/booking_bloc.dart';
 import '../../bloc/events/booking_event.dart';
 import '../../bloc/states/booking_state.dart';
 import '../common/loading_card.dart';
+import 'package:go_router/go_router.dart';
+
 class ResourceBookingForm extends StatefulWidget {
   const ResourceBookingForm({super.key});
 
@@ -125,6 +127,22 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Resource Booking"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+            onPressed: () => context.canPop() ? context.pop() : context.go('/'),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () {
+                context.go('/history');
+              },
+            ),
+          ],
+        ),
         body: Stack(
           children: [
             SingleChildScrollView(
