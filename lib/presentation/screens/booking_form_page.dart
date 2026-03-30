@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 import '../../bloc/bloc/booking_bloc.dart';
 import '../../bloc/events/booking_event.dart';
 import '../../bloc/states/booking_state.dart';
 import '../common/loading_card.dart';
-import 'package:go_router/go_router.dart';
 
 class ResourceBookingForm extends StatefulWidget {
   const ResourceBookingForm({super.key});
@@ -22,7 +23,7 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     "Equipment",
     "Ideation Room 1",
     "Ideation Room 2",
-    "Conference Room"
+    "Conference Room",
   ];
 
   // Controllers
@@ -42,33 +43,78 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     super.dispose();
   }
 
-  // --- Pickers ---
+  // --- Pickers with Local Theme Overrides ---
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(), // Prevent past bookings
+      firstDate: DateTime.now(),
       lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.primaryBlue, // Header and selected day
+              onPrimary: Colors.white,
+              onSurface: AppTheme.textDark, // Body text
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.primaryBlue, // Action buttons
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        // Matches Kotlin format: "$selectedDay/${selectedMonth + 1}/$selectedYear"
         controller.text = "${picked.day}/${picked.month}/${picked.year}";
       });
     }
   }
 
-  Future<void> _selectTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectTime(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.primaryBlue, // Clock needle and AM/PM toggle
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: AppTheme.textDark, // Numbers
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.primaryBlue, // Action buttons
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
-        // Matches Kotlin 12-hour AM/PM format
         final now = DateTime.now();
-        final dt = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+        final dt = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          picked.hour,
+          picked.minute,
+        );
         controller.text = DateFormat('hh:mm a').format(dt);
       });
     }
@@ -83,29 +129,32 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     final fromTime = _fromTimeCtrl.text.trim();
     final toTime = _toTimeCtrl.text.trim();
 
-    // Validations mirroring Kotlin
     if (_selectedResource == "Equipment" && equipmentName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please specify the equipment name")),
       );
       return;
     }
-    if (fromDate.isEmpty || toDate.isEmpty || fromTime.isEmpty || toTime.isEmpty) {
+    if (fromDate.isEmpty ||
+        toDate.isEmpty ||
+        fromTime.isEmpty ||
+        toTime.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields")),
       );
       return;
     }
 
-    // Trigger BLoC Event
-    context.read<BookingBloc>().add(SubmitBookingEvent(
-      resourceType: _selectedResource,
-      equipmentName: equipmentName,
-      fromDate: fromDate,
-      toDate: toDate,
-      fromTime: fromTime,
-      toTime: toTime,
-    ));
+    context.read<BookingBloc>().add(
+      SubmitBookingEvent(
+        resourceType: _selectedResource,
+        equipmentName: equipmentName,
+        fromDate: fromDate,
+        toDate: toDate,
+        fromTime: fromTime,
+        toTime: toTime,
+      ),
+    );
   }
 
   // --- Build UI ---
@@ -115,14 +164,13 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     return BlocListener<BookingBloc, BookingState>(
       listener: (context, state) {
         if (state is BookingSubmitSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-          // Optional: Clear form or pop navigation here
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         } else if (state is BookingSubmitError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
       child: Scaffold(
@@ -137,9 +185,7 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
           actions: [
             IconButton(
               icon: const Icon(Icons.history),
-              onPressed: () {
-                context.go('/history');
-              },
+              onPressed: () => context.go('/history'),
             ),
           ],
         ),
@@ -150,20 +196,29 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Select Resource", style: TextStyle(fontSize: 16)),
+                  const Text(
+                    "Select Resource",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
 
-                  // 1. Spinner (Dropdown)
+                  // 1. Themed Dropdown (Spinner)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey.shade50,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
                         value: _selectedResource,
+                        dropdownColor: Colors.white,
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppTheme.primaryBlue, //
+                        ),
                         items: _resourceOptions.map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -173,7 +228,6 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
                         onChanged: (newValue) {
                           setState(() {
                             _selectedResource = newValue!;
-                            // Logic: Clear component name if not Equipment
                             if (_selectedResource != "Equipment") {
                               _componentNameCtrl.clear();
                             }
@@ -183,42 +237,52 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
                     ),
                   ),
 
-                  // 2. Equipment Name Input (Conditional Visibility)
                   if (_selectedResource == "Equipment") ...[
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: _componentNameCtrl,
-                      decoration: InputDecoration(
-                        hintText: "Component Name",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                      decoration: _inputDecoration(
+                        "Component Name",
+                        Icons.build_outlined,
                       ),
                     ),
                   ],
 
                   const Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text("Select Date", style: TextStyle(fontSize: 16)),
+                    padding: EdgeInsets.only(top: 20, bottom: 10),
+                    child: Text(
+                      "Select Date",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
 
                   // 3. Date Pickers
                   _buildPickerField(
                     controller: _fromDateCtrl,
-                    hint: "Select a date",
-                    icon: Icons.calendar_today,
+                    hint: "Start Date",
+                    icon: Icons.calendar_today_outlined,
                     onTap: () => _selectDate(context, _fromDateCtrl),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   _buildPickerField(
                     controller: _toDateCtrl,
-                    hint: "Select a date",
-                    icon: Icons.calendar_today,
+                    hint: "End Date",
+                    icon: Icons.calendar_today_outlined,
                     onTap: () => _selectDate(context, _toDateCtrl),
                   ),
 
                   const Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text("Select Time", style: TextStyle(fontSize: 16)),
+                    padding: EdgeInsets.only(top: 20, bottom: 10),
+                    child: Text(
+                      "Select Time",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
 
                   // 4. Time Pickers (Cards)
@@ -233,19 +297,29 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
                     onTap: () => _selectTime(context, _toTimeCtrl),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-                  // 5. Submit Button
+                  // 5. Themed Submit Button
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 54,
                     child: ElevatedButton(
                       onPressed: _submitData,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // @color/primary
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        backgroundColor: AppTheme.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
                       ),
-                      child: const Text("Book Now", style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: const Text(
+                        "Book Now",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -257,8 +331,8 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
               builder: (context, state) {
                 if (state is BookingLoading) {
                   return Container(
-                    color: Colors.black12,
-                    child: Center(child: LoadingCard()),
+                    color: Colors.black26,
+                    child: const Center(child: LoadingCard()),
                   );
                 }
                 return const SizedBox.shrink();
@@ -272,40 +346,41 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
 
   // --- Widget Helpers ---
 
+  InputDecoration _inputDecoration(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: Icon(icon, color: AppTheme.primaryBlue, size: 20),
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+      ),
+    );
+  }
+
   Widget _buildPickerField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
     required VoidCallback onTap,
   }) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: controller,
-            readOnly: true,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              filled: true,
-              fillColor: Colors.grey.shade50, // @drawable/input_background simulation
-            ),
-          ),
+    return GestureDetector(
+      onTap: onTap,
+      child: AbsorbPointer(
+        child: TextField(
+          controller: controller,
+          decoration: _inputDecoration(hint, icon),
         ),
-        const SizedBox(width: 8),
-        InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.transparent, // ?attr/selectableItemBackground
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: Colors.grey.shade700, size: 30),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -314,28 +389,40 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     required TextEditingController controller,
     required VoidCallback onTap,
   }) {
+    bool hasTime = controller.text.isNotEmpty;
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 16))),
-            Text(
-              controller.text.isEmpty ? "--:--" : controller.text,
-              style: TextStyle(
-                fontSize: 16,
-                color: controller.text.isEmpty ? Colors.grey : Colors.black,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      elevation: 0,
+      color: Colors.grey.shade50,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade300),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.access_time,
+                color: AppTheme.primaryBlue,
+                size: 20,
               ),
-            ),
-            const SizedBox(width: 60),
-            InkWell(
-              onTap: onTap,
-              child: const Icon(Icons.access_time, color: Colors.grey, size: 30),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Text(label, style: const TextStyle(fontSize: 16)),
+              const Spacer(),
+              Text(
+                hasTime ? controller.text : "--:--",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: hasTime ? FontWeight.bold : FontWeight.normal,
+                  color: hasTime ? AppTheme.textDark : Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

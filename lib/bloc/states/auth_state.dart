@@ -18,6 +18,8 @@ class AuthError extends AuthState {
   List<Object> get props => [message];
 }
 
+class AuthLoggedOut extends AuthState {}
+
 class AuthPasswordResetSuccess extends AuthState {
   final String message;
   AuthPasswordResetSuccess(this.message);

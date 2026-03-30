@@ -5,6 +5,7 @@ import 'package:nvcti/bloc/bloc/inventory_bloc.dart';
 import 'package:nvcti/bloc/events/inventory_event.dart';
 import 'package:nvcti/bloc/states/inventory_state.dart';
 import 'package:nvcti/presentation/common/inventory_card.dart';
+import 'package:nvcti/presentation/common/loading_card.dart';
 
 import '../../core/di/injection_container.dart';
 
@@ -80,7 +81,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 // 2. BUILDER: Use this to rebuild the UI
                 builder: (context, state) {
                   if (state is InventoryLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: LoadingCard());
                   }
 
                   if (state is InventoryLoaded) {

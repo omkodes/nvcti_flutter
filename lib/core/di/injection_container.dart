@@ -11,19 +11,19 @@ import 'package:nvcti/data/datasources/remote_datasource/inventory_remote_data_s
 import 'package:nvcti/data/repositories/auth_repository_impl.dart';
 import 'package:nvcti/data/repositories/booking_repository_impl.dart';
 import 'package:nvcti/data/repositories/club_repository_impl.dart';
+import 'package:nvcti/data/repositories/user_repository_impl.dart';
 import 'package:nvcti/domain/repositories/auth_repository.dart';
 import 'package:nvcti/domain/repositories/booking_repository.dart';
 import 'package:nvcti/domain/repositories/club_repository.dart';
+import 'package:nvcti/domain/repositories/user_repository.dart';
 import 'package:nvcti/domain/usecases/ForgotPasswordUseCase.dart';
 import 'package:nvcti/domain/usecases/LoginUseCase.dart';
 import 'package:nvcti/domain/usecases/RegisterUseCase.dart';
 import 'package:nvcti/domain/usecases/add_booking.dart';
 import 'package:nvcti/domain/usecases/get_bookings.dart';
 import 'package:nvcti/domain/usecases/get_clubs.dart';
+import 'package:nvcti/domain/usecases/logout_usecase.dart';
 import 'package:nvcti/domain/usecases/resendVerificationEmailUseCase.dart';
-
-import '../../data/repositories/user_repository_impl.dart';
-import '../../domain/repositories/user_repository.dart';
 
 class Injector {
   static final GetIt _getIt = GetIt.instance;
@@ -60,12 +60,15 @@ class Injector {
       () => BookingRepositoryImpl(),
     );
     _getIt.registerLazySingleton<UserRepository>(
-          () => UserRepositoryImpl(firestore: _getIt<FirebaseFirestore>()),
+      () => UserRepositoryImpl(firestore: _getIt<FirebaseFirestore>()),
     );
 
     // --- Use Cases ---
     _getIt.registerLazySingleton<LoginUseCase>(
       () => LoginUseCase(_getIt<AuthRepository>()),
+    );
+    _getIt.registerLazySingleton<LogoutUseCase>(
+      () => LogoutUseCase(_getIt<AuthRepository>()),
     );
     _getIt.registerLazySingleton<RegisterUseCase>(
       () => RegisterUseCase(_getIt<AuthRepository>()),
@@ -89,6 +92,7 @@ class Injector {
     // --- Blocs ---
     _getIt.registerFactory<AuthBloc>(
       () => AuthBloc(
+        logoutUseCase: _getIt<LogoutUseCase>(),
         loginUseCase: _getIt<LoginUseCase>(),
         registerUseCase: _getIt<RegisterUseCase>(),
         forgotPasswordUseCase: _getIt<ForgotPasswordUseCase>(),

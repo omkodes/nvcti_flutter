@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 class LoadingCard extends StatelessWidget {
   const LoadingCard({super.key});
@@ -7,10 +8,10 @@ class LoadingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 30,
-      color: const Color(0xFF2C2C2C),
+      color: AppTheme.primaryBlue,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white24, width: 1),
           borderRadius: BorderRadius.circular(20),

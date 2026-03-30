@@ -5,6 +5,7 @@ import 'package:nvcti/bloc/bloc/club_bloc.dart';
 import 'package:nvcti/bloc/events/club_event.dart';
 import 'package:nvcti/bloc/states/club_state.dart';
 import 'package:nvcti/core/di/injection_container.dart';
+import 'package:nvcti/presentation/common/loading_card.dart';
 
 import '../common/club_list_card.dart';
 
@@ -34,7 +35,7 @@ class TechClubScreen extends StatelessWidget {
         body: BlocBuilder<ClubBloc, ClubState>(
           builder: (context, state) {
             if (state is ClubLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: LoadingCard());
             }
 
             if (state is ClubLoaded) {

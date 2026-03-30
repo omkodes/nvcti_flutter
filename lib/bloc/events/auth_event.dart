@@ -13,6 +13,8 @@ class LoginRequested extends AuthEvent {
   List<Object> get props => [email, password];
 }
 
+class LogoutRequested extends AuthEvent {}
+
 class RegisterRequested extends AuthEvent {
   final String name;
   final String email;

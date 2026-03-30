@@ -4,10 +4,12 @@ import 'package:nvcti/bloc/states/auth_state.dart';
 import 'package:nvcti/domain/usecases/ForgotPasswordUseCase.dart';
 import 'package:nvcti/domain/usecases/LoginUseCase.dart';
 import 'package:nvcti/domain/usecases/RegisterUseCase.dart';
+import 'package:nvcti/domain/usecases/logout_usecase.dart';
 import 'package:nvcti/domain/usecases/resendVerificationEmailUseCase.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
+  final LogoutUseCase logoutUseCase;
   final RegisterUseCase registerUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
@@ -17,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.registerUseCase,
     required this.forgotPasswordUseCase,
     required this.resendVerificationEmailUseCase,
+    required this.logoutUseCase,
   }) : super(AuthInitial()) {
     on<LoginRequested>((event, emit) async {
       emit(AuthLoading());
@@ -47,6 +50,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       } catch (e) {
         emit(AuthError(e.toString().replaceAll('Exception: ', '')));
+      }
+    });
+
+    on<LogoutRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await logoutUseCase();
+        emit(AuthLoggedOut()); // Success state
+      } catch (e) {
+        emit(AuthError(e.toString()));
       }
     });
 

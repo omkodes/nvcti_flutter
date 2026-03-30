@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../bloc/bloc/projects_bloc.dart';
 import '../../bloc/events/projects_event.dart';
@@ -9,7 +10,6 @@ import '../../data/repositories/projects_repository_impl.dart';
 import '../../domain/usecases/get_projects.dart';
 import '../common/loading_card.dart';
 import '../common/project_item.dart';
-import 'package:go_router/go_router.dart';
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({super.key});
@@ -52,10 +52,11 @@ class ProjectsView extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: TextField(
                     decoration: const InputDecoration(

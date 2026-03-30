@@ -108,4 +108,14 @@ class AuthRemoteDataSource {
       throw Exception(_mapFirebaseErrorCode(e.code));
     }
   }
+
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_mapFirebaseErrorCode(e.code));
+    } catch (e) {
+      throw Exception('An unexpected error occurred.');
+    }
+  }
 }

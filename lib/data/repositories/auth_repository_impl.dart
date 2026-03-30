@@ -34,4 +34,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     return await remoteDataSource.resendVerificationEmail(email, password);
   }
+
+  Future<void> logout() async {
+    return await remoteDataSource
+        .logout(); // You'll need to add logout() to AuthRemoteDataSource too
+  }
 }
