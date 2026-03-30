@@ -7,7 +7,7 @@ import 'package:nvcti/presentation/screens/booking_form_page.dart';
 import 'package:nvcti/presentation/screens/forgot_password_screen.dart';
 import 'package:nvcti/presentation/screens/forms_page.dart';
 import 'package:nvcti/presentation/screens/history_page.dart';
-import 'package:nvcti/presentation/screens/home_page.dart';
+import 'package:nvcti/presentation/screens/home_screen.dart';
 import 'package:nvcti/presentation/screens/inventory_screen.dart';
 import 'package:nvcti/presentation/screens/login_screen.dart';
 import 'package:nvcti/presentation/screens/register_screen.dart';
@@ -57,7 +57,7 @@ class AppRouter {
     },
 
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
