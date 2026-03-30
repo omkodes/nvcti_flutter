@@ -1,6 +1,10 @@
+// lib/presentation/common/club_list_card.dart
+// Replace your existing club_list_card.dart with this file.
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nvcti/domain/entities/club.dart';
+import 'package:nvcti/presentation/screens/club_detail_screen.dart';
 
 class ClubListCard extends StatelessWidget {
   final Club club;
@@ -10,7 +14,7 @@ class ClubListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16), // Spacing between cards
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -18,7 +22,7 @@ class ClubListCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
-            offset: const Offset(0, 4), // Subtle drop shadow
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -26,7 +30,15 @@ class ClubListCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: () {},
+          // ── Navigate to the detail screen on tap ──
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ClubDetailScreen(clubId: club.id),
+              ),
+            );
+          },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -35,23 +47,24 @@ class ClubListCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Logo Container
+                // Logo
                 Container(
                   width: 50,
                   height: 50,
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.white, // Ensure logo sits on white
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: CachedNetworkImage(
                     imageUrl: club.logoPath,
-                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
                 ),
                 const SizedBox(width: 16),
 
-                // Club Name
+                // Club name
                 Expanded(
                   child: Text(
                     club.name,
@@ -61,10 +74,12 @@ class ClubListCard extends StatelessWidget {
                       color: Colors.black87,
                     ),
                     maxLines: 2,
-                    overflow: TextOverflow
-                        .ellipsis, // Handles long names like "Entrepreneurship..."
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+
+                // Chevron hint
+                const Icon(Icons.chevron_right, color: Colors.grey),
               ],
             ),
           ),
