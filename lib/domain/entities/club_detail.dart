@@ -1,14 +1,16 @@
 // lib/domain/entities/club_detail.dart
 
 class ClubMember {
-  final String admNo;
-  final String name;
+  final String studentID;
+  final String studentName;
+  final String studentEmail;
   final String
-  year; // "1st Year" | "2nd Year" | "3rd Year" | "Final Year" | "Super Final Year"
+  year; // e.g. "1st Year" | "2nd Year" | "3rd Year" | "Final Year" | "Super Final Year"
 
   const ClubMember({
-    required this.admNo,
-    required this.name,
+    required this.studentID,
+    required this.studentName,
+    required this.studentEmail,
     required this.year,
   });
 }
@@ -38,7 +40,7 @@ class ClubDetail {
   final String coordinator;
   final String techCoordinator;
 
-  // All members by year
+  // All members grouped by year
   final List<ClubMember> members;
 
   // Projects

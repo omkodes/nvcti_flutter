@@ -1,3 +1,5 @@
+// lib/data/datasources/remote_datasource/club_detail_remote_data_source.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nvcti/data/models/club_model.dart';
 
@@ -18,7 +20,7 @@ class ClubRemoteDataSourceImpl implements ClubRemoteDataSource {
           .map((doc) => ClubModel.fromFirestore(doc))
           .toList();
     } catch (e) {
-      throw Exception("problem to fetch the data $e");
+      throw Exception('Failed to fetch club detail: $e');
     }
   }
 }

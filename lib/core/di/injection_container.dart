@@ -9,22 +9,22 @@ import 'package:nvcti/bloc/bloc/auth_bloc.dart';
 import 'package:nvcti/bloc/bloc/booking_bloc.dart';
 // Clubs
 import 'package:nvcti/bloc/bloc/club_bloc.dart';
+import 'package:nvcti/bloc/bloc/club_detail_bloc.dart';
 // Forms
 import 'package:nvcti/bloc/bloc/forms_bloc.dart';
 // Inventory
 import 'package:nvcti/bloc/bloc/inventory_bloc.dart';
 import 'package:nvcti/bloc/bloc/notificaiton_bloc.dart';
-// Notifications (New)
-// Projects
 import 'package:nvcti/bloc/bloc/projects_bloc.dart';
 import 'package:nvcti/data/datasources/remote_datasource/auth_remote_data_source.dart';
+import 'package:nvcti/data/datasources/remote_datasource/club_detail_remote_data_source.dart';
 import 'package:nvcti/data/datasources/remote_datasource/club_remote_data_source.dart';
 import 'package:nvcti/data/datasources/remote_datasource/inventory_remote_data_source.dart';
-// Notifications
 import 'package:nvcti/data/datasources/remote_datasource/notification_remote_data_source.dart';
 import 'package:nvcti/data/repositories/achievements_repository_impl.dart';
 import 'package:nvcti/data/repositories/auth_repository_impl.dart';
 import 'package:nvcti/data/repositories/booking_repository_impl.dart';
+import 'package:nvcti/data/repositories/club_detail_repository_impl.dart';
 import 'package:nvcti/data/repositories/club_repository_impl.dart';
 import 'package:nvcti/data/repositories/forms_repository_impl.dart';
 import 'package:nvcti/data/repositories/notificaiton_repository_impl.dart';
@@ -33,6 +33,7 @@ import 'package:nvcti/data/repositories/user_repository_impl.dart';
 import 'package:nvcti/domain/repositories/achievements_repository.dart';
 import 'package:nvcti/domain/repositories/auth_repository.dart';
 import 'package:nvcti/domain/repositories/booking_repository.dart';
+import 'package:nvcti/domain/repositories/club_detail_repository.dart';
 import 'package:nvcti/domain/repositories/club_repository.dart';
 import 'package:nvcti/domain/repositories/form_repository.dart';
 import 'package:nvcti/domain/repositories/notificaiton_repository.dart';
@@ -44,6 +45,7 @@ import 'package:nvcti/domain/usecases/RegisterUseCase.dart';
 import 'package:nvcti/domain/usecases/add_booking.dart';
 import 'package:nvcti/domain/usecases/get_achievements.dart';
 import 'package:nvcti/domain/usecases/get_bookings.dart';
+import 'package:nvcti/domain/usecases/get_club_detail.dart';
 import 'package:nvcti/domain/usecases/get_clubs.dart';
 import 'package:nvcti/domain/usecases/get_forms.dart';
 import 'package:nvcti/domain/usecases/get_notificaitons.dart';
@@ -75,6 +77,12 @@ class Injector {
     _getIt.registerLazySingleton<NotificationRemoteDataSource>(
       () => NotificationRemoteDataSourceImpl(_getIt<FirebaseFirestore>()),
     );
+    // ✅ NEW: ClubDetail data source
+    _getIt.registerLazySingleton<ClubDetailRemoteDataSource>(
+      () => ClubDetailRemoteDataSourceImpl(
+        firestore: _getIt<FirebaseFirestore>(),
+      ),
+    );
 
     // --- Repositories ---
     _getIt.registerLazySingleton<AuthRepository>(
@@ -102,6 +110,12 @@ class Injector {
     );
     _getIt.registerLazySingleton<NotificationRepository>(
       () => NotificationRepositoryImpl(_getIt<NotificationRemoteDataSource>()),
+    );
+    // ✅ NEW: ClubDetail repository
+    _getIt.registerLazySingleton<ClubDetailRepository>(
+      () => ClubDetailRepositoryImpl(
+        remoteDataSource: _getIt<ClubDetailRemoteDataSource>(),
+      ),
     );
 
     // --- Use Cases ---
@@ -141,6 +155,10 @@ class Injector {
     _getIt.registerLazySingleton<GetNotifications>(
       () => GetNotifications(_getIt<NotificationRepository>()),
     );
+    // ✅ NEW: GetClubDetail use case
+    _getIt.registerLazySingleton<GetClubDetail>(
+      () => GetClubDetail(_getIt<ClubDetailRepository>()),
+    );
 
     // --- Blocs ---
     _getIt.registerFactory<AuthBloc>(
@@ -177,6 +195,10 @@ class Injector {
     );
     _getIt.registerFactory<NotificationBloc>(
       () => NotificationBloc(getNotifications: _getIt<GetNotifications>()),
+    );
+    // ✅ NEW: ClubDetailBloc
+    _getIt.registerFactory<ClubDetailBloc>(
+      () => ClubDetailBloc(getClubDetail: _getIt<GetClubDetail>()),
     );
   }
 

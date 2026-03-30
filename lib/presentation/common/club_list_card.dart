@@ -1,6 +1,3 @@
-// lib/presentation/common/club_list_card.dart
-// Replace your existing club_list_card.dart with this file.
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nvcti/domain/entities/club.dart';
@@ -30,12 +27,12 @@ class ClubListCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          // ── Navigate to the detail screen on tap ──
+          // ✅ Now passing clubId (e.g. "C007") not the auto-generated doc ID
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ClubDetailScreen(clubId: club.id),
+                builder: (_) => ClubDetailScreen(clubId: club.clubId),
               ),
             );
           },

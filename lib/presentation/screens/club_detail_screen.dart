@@ -66,21 +66,22 @@ class _ClubDetailBody extends StatefulWidget {
 
 class _ClubDetailBodyState extends State<_ClubDetailBody>
     with SingleTickerProviderStateMixin {
+  // Ordered list of all possible year labels (must match ClubDetailModel)
   static const _allYears = [
     '1st Year',
     '2nd Year',
     '3rd Year',
-    'Final Year',
-    'Super Final Year',
+    '4th Year (Final Year)',
+    '5th Year (Super Final)',
   ];
 
   late final List<String> _availableYears;
   late final TabController _tabController;
-  bool _showAllMembers = false;
 
   @override
   void initState() {
     super.initState();
+    // Only show tabs for years that actually have members
     _availableYears = _allYears
         .where((y) => widget.club.members.any((m) => m.year == y))
         .toList();
@@ -111,7 +112,7 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
     final max = _availableYears
         .map((y) => _membersForYear(y).length)
         .reduce((a, b) => a > b ? a : b);
-    return (max * 45.0 + 32).clamp(100, 500);
+    return (max * 52.0 + 32).clamp(100, 520);
   }
 
   bool _hasSocialLinks() {
@@ -183,7 +184,7 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                   child: Container(height: 4, color: const Color(0xFF26C6DA)),
                 ),
 
-                // Club logo overlaid on banner bottom-left
+                // Club logo
                 Positioned(
                   bottom: 12,
                   left: 16,
@@ -230,7 +231,7 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
 
               const SizedBox(height: 24),
 
-              // Key Members
+              // Key Members card
               _buildKeyMembers(club),
 
               const SizedBox(height: 24),
@@ -241,7 +242,7 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                 const SizedBox(height: 24),
               ],
 
-              // Members list by year tab
+              // Members list with year tabs
               if (_availableYears.isNotEmpty) _buildMembersList(),
 
               // Social links
@@ -263,51 +264,59 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
       _LabelValue('Co-FIC', club.coFic),
       _LabelValue('Coordinator', club.coordinator),
       _LabelValue('Tech Coordinator', club.techCoordinator),
-    ];
-
-    final visible = _showAllMembers ? rows : rows.take(4).toList();
+    ].where((r) => r.value.isNotEmpty).toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Key Members',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              GestureDetector(
-                onTap: () => setState(() => _showAllMembers = !_showAllMembers),
-                child: Text(
-                  _showAllMembers ? 'Show Less' : 'Show More',
-                  style: const TextStyle(
-                    color: Color(0xFF1565C0),
-                    fontSize: 14,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
+          const Text(
+            'Key Members',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
-          ...visible.map(
-            (r) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  children: [
-                    TextSpan(
-                      text: '${r.label}: ',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(text: r.value.isEmpty ? 'NA' : r.value),
-                  ],
-                ),
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F7FA),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: rows.map((r) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 130,
+                        child: Text(
+                          r.label,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1565C0),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          r.value,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -342,12 +351,19 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
     );
   }
 
-  // ── Members list ─────────────────────────────
+  // ── Members list with year tabs ───────────────
 
   Widget _buildMembersList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 10),
+          child: Text(
+            'Club Members',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
         Container(
           color: Colors.white,
           child: TabBar(
@@ -387,26 +403,49 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                 itemBuilder: (_, i) {
                   final m = members[i];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 11),
                     child: Row(
                       children: [
-                        SizedBox(
-                          width: 100,
+                        // Avatar with initials
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: const Color(
+                            0xFF1565C0,
+                          ).withOpacity(0.1),
                           child: Text(
-                            m.admNo,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            m.name,
+                            m.studentName.isNotEmpty
+                                ? m.studentName[0].toUpperCase()
+                                : '?',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF1565C0),
                             ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Name + Student ID
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                m.studentName,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                m.studentID,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -531,18 +570,18 @@ class _ProjectCard extends StatelessWidget {
                       errorWidget: (_, __, ___) => Container(
                         color: Colors.grey[200],
                         child: const Icon(
-                          Icons.image,
+                          Icons.precision_manufacturing_outlined,
                           color: Colors.grey,
-                          size: 32,
+                          size: 28,
                         ),
                       ),
                     )
                   : Container(
-                      color: Colors.grey[200],
+                      color: const Color(0xFFEEF2FF),
                       child: const Icon(
-                        Icons.image,
-                        color: Colors.grey,
-                        size: 32,
+                        Icons.precision_manufacturing_outlined,
+                        color: Color(0xFF1565C0),
+                        size: 28,
                       ),
                     ),
             ),
@@ -569,7 +608,7 @@ class _ProjectCard extends StatelessWidget {
                     child: Text(
                       project.description,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: Colors.grey[700],
                         height: 1.4,
                       ),

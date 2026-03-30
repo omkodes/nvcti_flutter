@@ -17,31 +17,12 @@ class ClubDetailRemoteDataSourceImpl implements ClubDetailRemoteDataSource {
   @override
   Future<ClubDetail> fetchClubDetail(String clubId) async {
     try {
-      // Fetch main club document
-      final doc = await firestore.collection('TechClubs').doc(clubId).get();
-      if (!doc.exists) throw Exception('Club not found');
+      // All club data is stored flat inside TechClubData/<clubId>
+      final doc = await firestore.collection('TechClubData').doc(clubId).get();
 
-      // Fetch members sub-collection
-      final membersSnap = await firestore
-          .collection('TechClubs')
-          .doc(clubId)
-          .collection('members')
-          .get();
-      final members = membersSnap.docs
-          .map((d) => ClubMemberModel.fromMap(d.data()))
-          .toList();
+      if (!doc.exists) throw Exception('Club not found: $clubId');
 
-      // Fetch projects sub-collection
-      final projectsSnap = await firestore
-          .collection('TechClubs')
-          .doc(clubId)
-          .collection('projects')
-          .get();
-      final projects = projectsSnap.docs
-          .map((d) => ClubProjectModel.fromMap(d.data()))
-          .toList();
-
-      return ClubDetailModel.fromFirestore(doc, members, projects);
+      return ClubDetailModel.fromFirestore(doc);
     } catch (e) {
       throw Exception('Failed to fetch club detail: $e');
     }

@@ -1,5 +1,5 @@
-import 'package:nvcti/domain/entities/club.dart';
+import 'package:nvcti/data/models/club_model.dart';
 
 abstract class ClubRepository {
-  Future<List<Club>> getTechClubs();
+  Future<List<ClubModel>> getTechClubs();
 }

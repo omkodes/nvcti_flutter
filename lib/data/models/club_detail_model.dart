@@ -4,18 +4,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/club_detail.dart';
 
+/// Parses a member map from one of the flat year-arrays in Firestore.
+/// Firestore fields: studentID, studentName, studentEmail
 class ClubMemberModel extends ClubMember {
   const ClubMemberModel({
-    required super.admNo,
-    required super.name,
+    required super.studentID,
+    required super.studentName,
+    required super.studentEmail,
     required super.year,
   });
 
-  factory ClubMemberModel.fromMap(Map<String, dynamic> map) {
+  factory ClubMemberModel.fromMap(Map<String, dynamic> map, String year) {
     return ClubMemberModel(
-      admNo: map['admNo'] ?? '',
-      name: map['name'] ?? '',
-      year: map['year'] ?? '',
+      studentID: map['studentID'] ?? '',
+      studentName: map['studentName'] ?? '',
+      studentEmail: map['studentEmail'] ?? '',
+      year: year,
     );
   }
 }
@@ -55,28 +59,67 @@ class ClubDetailModel extends ClubDetail {
     super.email,
   });
 
-  factory ClubDetailModel.fromFirestore(
-    DocumentSnapshot doc,
-    List<ClubMember> members,
-    List<ClubProject> projects,
-  ) {
+  /// Parses a flat Firestore document from TechClubData/<clubId>.
+  ///
+  /// Member arrays in Firestore:
+  ///   clubMemberFirstYear    → "1st Year"
+  ///   clubMemberSecondYear   → "2nd Year"
+  ///   clubMemberThirdYear    → "3rd Year"
+  ///   clubMemberFinalYear    → "Final Year"
+  ///   clubMemberSuperFinalYear → "Super Final Year"
+  ///
+  /// Project array: recentProjects
+  factory ClubDetailModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    // ── Parse members from flat arrays ──────────────────────────
+    final yearMap = {
+      'clubMemberFirstYear': '1st Year',
+      'clubMemberSecondYear': '2nd Year',
+      'clubMemberThirdYear': '3rd Year',
+      'clubMemberFinalYear': '4th Year (Final Year)',
+      'clubMemberSuperFinalYear': '5th Year (Super Final)',
+    };
+
+    final members = <ClubMember>[];
+    for (final entry in yearMap.entries) {
+      final rawList = data[entry.key];
+      if (rawList is List) {
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            members.add(ClubMemberModel.fromMap(item, entry.value));
+          }
+        }
+      }
+    }
+
+    // ── Parse projects ───────────────────────────────────────────
+    final rawProjects = data['recentProjects'];
+    final projects = <ClubProject>[];
+    if (rawProjects is List) {
+      for (final p in rawProjects) {
+        if (p is Map<String, dynamic>) {
+          projects.add(ClubProjectModel.fromMap(p));
+        }
+      }
+    }
+
     return ClubDetailModel(
       id: doc.id,
       name: data['clubName'] ?? '',
       logoUrl: data['logoUrl'] ?? '',
       bannerUrl: data['bannerUrl'] ?? '',
       description: data['clubDescription'] ?? '',
-      fic: data['fic'] ?? '',
-      coFic: data['coFic'] ?? '',
-      coordinator: data['coordinator'] ?? '',
-      techCoordinator: data['techCoordinator'] ?? '',
+      fic: data['clubFIC'] ?? '',
+      coFic: data['clubCoFIC'] ?? '',
+      coordinator: data['clubCoordi'] ?? '',
+      techCoordinator: data['clubTechCoordi'] ?? '',
       members: members,
       projects: projects,
       websiteUrl: data['websiteUrl'] ?? '',
       linkedinUrl: data['linkedinUrl'] ?? '',
-      instagramUrl: data['instagramUrl'] ?? '',
-      email: data['email'] ?? '',
+      instagramUrl: data['instaUrl'] ?? '',
+      email: data['mailId'] ?? '',
     );
   }
 }
