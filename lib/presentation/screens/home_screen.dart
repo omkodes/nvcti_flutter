@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nvcti/domain/entities/menu_item.dart';
 import 'package:nvcti/presentation/common/menu_grid_card.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -35,7 +36,12 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              context.pushNamed('notifications');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
@@ -44,69 +50,75 @@ class HomeScreen extends StatelessWidget {
             },
           ),
           const SizedBox(width: 8),
-          ]
+        ],
       ),
 
-          drawer: Drawer(
-            child: Container(
-              color: Colors.white,
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+        child: Column(
+          children: [
+            // Header with primaryBlue background
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: AppTheme.primaryBlue),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    'assets/logos/iv_nvcti_logo.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              accountName: const Text(
+                "NVCTI",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              accountEmail: const Text("Tinkering & Innovation Center"),
+            ),
+
+            // Scrollable Menu Items
+            Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  DrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    margin: EdgeInsets.zero,
-                    padding: const EdgeInsets.only(top: 30.0),
-                    child: Image.asset(
-                      'assets/logos/iv_app_banner.png',
-                      fit: BoxFit.contain,
-                    ),
+                  _buildDrawerItem(
+                    context,
+                    Icons.group_outlined,
+                    'Tech Clubs',
+                    '/clubs',
                   ),
-
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: const Text('Tech Clubs'),
-                    onTap: () {
-                      context.go('/clubs');
-                    },
+                  _buildDrawerItem(
+                    context,
+                    Icons.work_outline,
+                    'Projects',
+                    '/projects',
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.work),
-                    title: const Text('Projects'),
-                    onTap: () {
-                      context.go('/projects');
-                    },
+                  _buildDrawerItem(
+                    context,
+                    Icons.emoji_events_outlined,
+                    'Achievements',
+                    '/achievements',
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.emoji_events),
-                    title: const Text('Achievements'),
-                    onTap: () {
-                      context.go('/achievements');
-                    },
+                  const Divider(height: 32),
+                  _buildDrawerItem(
+                    context,
+                    Icons.info_outline,
+                    'About Us',
+                    '/aboutUs',
                   ),
-
-                  const Divider(),
-
-                  ListTile(
-                    leading: const Icon(Icons.info),
-                    title: const Text('About Us'),
-                    onTap: () {
-                      context.go('/aboutUs');
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.developer_mode),
-                    title: const Text('Developer Contact'),
-                    onTap: () {
-                      context.go('/developer');
-                    },
+                  _buildDrawerItem(
+                    context,
+                    Icons.developer_mode_outlined,
+                    'Developer Contact',
+                    '/developer',
                   ),
                 ],
               ),
             ),
-          ),
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -140,14 +152,12 @@ class HomeScreen extends StatelessWidget {
 
             GridView.builder(
               shrinkWrap: true,
-              physics:
-                  const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
-                childAspectRatio:
-                    0.85,
+                childAspectRatio: 0.85,
               ),
               itemCount: menuItems.length,
               itemBuilder: (context, index) {
@@ -157,6 +167,22 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String route,
+  ) {
+    return ListTile(
+      leading: Icon(icon, color: AppTheme.primaryBlue),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      onTap: () {
+        Navigator.pop(context); // Close drawer
+        context.go(route);
+      },
     );
   }
 }

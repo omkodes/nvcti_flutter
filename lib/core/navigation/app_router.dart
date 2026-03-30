@@ -13,11 +13,11 @@ import 'package:nvcti/presentation/screens/history_page.dart';
 import 'package:nvcti/presentation/screens/home_screen.dart';
 import 'package:nvcti/presentation/screens/inventory_screen.dart';
 import 'package:nvcti/presentation/screens/login_screen.dart';
+import 'package:nvcti/presentation/screens/notification_page.dart';
 import 'package:nvcti/presentation/screens/profile_screen.dart';
 import 'package:nvcti/presentation/screens/projects_page.dart';
 import 'package:nvcti/presentation/screens/register_screen.dart';
 import 'package:nvcti/presentation/screens/tech_club_screen.dart';
-
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -101,6 +101,12 @@ class AppRouter {
       GoRoute(
         path: '/developer',
         builder: (context, state) => const DeveloperInfoScreen(),
+      ),
+      // inside your router configuration
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationPage(),
       ),
     ],
   );

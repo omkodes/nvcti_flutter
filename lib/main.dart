@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nvcti/bloc/bloc/auth_bloc.dart';
 import 'package:nvcti/bloc/bloc/booking_bloc.dart';
+import 'package:nvcti/bloc/bloc/notificaiton_bloc.dart';
 import 'package:nvcti/core/di/injection_container.dart';
 import 'package:nvcti/core/navigation/app_router.dart';
 import 'package:nvcti/firebase_options.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthBloc>(create: (_) => Injector.get<AuthBloc>()),
         BlocProvider<BookingBloc>(create: (_) => Injector.get<BookingBloc>()),
+        BlocProvider<NotificationBloc>(
+          create: (_) => Injector.get<NotificationBloc>(),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter.router,
