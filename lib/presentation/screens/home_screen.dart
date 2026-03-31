@@ -45,7 +45,6 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              // Just push to /profile. GoRouter will intercept and route to /login if needed.
               context.push('/profile');
             },
           ),
@@ -57,7 +56,6 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         child: Column(
           children: [
-            // Header with primaryBlue background
             UserAccountsDrawerHeader(
               decoration: const BoxDecoration(color: AppTheme.primaryBlue),
               currentAccountPicture: CircleAvatar(
@@ -77,7 +75,6 @@ class HomeScreen extends StatelessWidget {
               accountEmail: const Text("Tinkering & Innovation Center"),
             ),
 
-            // Scrollable Menu Items
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -180,8 +177,8 @@ class HomeScreen extends StatelessWidget {
       leading: Icon(icon, color: AppTheme.primaryBlue),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: () {
-        Navigator.pop(context); // Close drawer
-        context.go(route);
+        Navigator.pop(context);
+        context.push(route);
       },
     );
   }

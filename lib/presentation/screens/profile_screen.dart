@@ -10,6 +10,7 @@ import 'package:nvcti/presentation/common/loading_card.dart';
 import 'package:nvcti/presentation/common/theme.dart';
 
 import '../../core/di/injection_container.dart';
+import '../../core/theme_cubit.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -24,7 +25,6 @@ class ProfileScreen extends StatelessWidget {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        // Handle post-logout navigation and backstack
         if (state is AuthLoggedOut) {
           context.go('/login');
         } else if (state is AuthError) {
@@ -35,7 +35,6 @@ class ProfileScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
-        // --- Updated Blue App Bar ---
         appBar: AppBar(
           backgroundColor: AppTheme.primaryBlue,
           title: const Text(
@@ -76,7 +75,6 @@ class ProfileScreen extends StatelessWidget {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // --- Profile Header Background & Picture ---
                   SizedBox(
                     height: 230,
                     child: Stack(
@@ -123,7 +121,6 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // --- User Info Card ---
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Card(
@@ -163,7 +160,38 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // --- Logout Button ---
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Card(
+                      color: Theme.of(context).cardColor,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: BlocBuilder<ThemeCubit, ThemeMode>(
+                        builder: (context, themeMode) {
+                          final isDark = themeMode == ThemeMode.dark;
+
+                          return SwitchListTile(
+                            title: const Text(
+                              "Dark Mode",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            value: isDark,
+                            onChanged: (value) {
+                              context.read<ThemeCubit>().toggleTheme(value);
+                            },
+                            secondary: Icon(
+                              isDark ? Icons.dark_mode : Icons.light_mode,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28.0),
                     child: SizedBox(
@@ -201,7 +229,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // --- UI Helper: Info Row ---
   Widget _buildInfoRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +250,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // --- Logic Helper: Logout Confirmation ---
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -239,7 +265,6 @@ class ProfileScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              // Dispatches the event to your Clean Architecture BLoC
               context.read<AuthBloc>().add(LogoutRequested());
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
