@@ -173,6 +173,7 @@ class ProfileScreen extends StatelessWidget {
                           final isDark = themeMode == ThemeMode.dark;
 
                           return SwitchListTile(
+                            activeColor: AppTheme.primaryBlue,
                             title: const Text(
                               "Dark Mode",
                               style: TextStyle(fontWeight: FontWeight.bold),

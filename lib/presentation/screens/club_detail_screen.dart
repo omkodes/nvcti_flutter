@@ -16,7 +16,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ClubDetailScreen extends StatelessWidget {
   final String clubId;
-
   const ClubDetailScreen({super.key, required this.clubId});
 
   @override
@@ -56,46 +55,9 @@ class ClubDetailScreen extends StatelessWidget {
 // BODY
 // ─────────────────────────────────────────────
 
-class _ClubDetailBody extends StatefulWidget {
+class _ClubDetailBody extends StatelessWidget {
   final ClubDetail club;
   const _ClubDetailBody({required this.club});
-
-  @override
-  State<_ClubDetailBody> createState() => _ClubDetailBodyState();
-}
-
-class _ClubDetailBodyState extends State<_ClubDetailBody>
-    with SingleTickerProviderStateMixin {
-  // Ordered list of all possible year labels (must match ClubDetailModel)
-  static const _allYears = [
-    '1st Year',
-    '2nd Year',
-    '3rd Year',
-    '4th Year (Final Year)',
-    '5th Year (Super Final)',
-  ];
-
-  late final List<String> _availableYears;
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Only show tabs for years that actually have members
-    _availableYears = _allYears
-        .where((y) => widget.club.members.any((m) => m.year == y))
-        .toList();
-    _tabController = TabController(
-      length: _availableYears.isEmpty ? 1 : _availableYears.length,
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   Future<void> _launch(String url) async {
     final uri = Uri.parse(url);
@@ -104,32 +66,26 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
     }
   }
 
-  List<ClubMember> _membersForYear(String year) =>
-      widget.club.members.where((m) => m.year == year).toList();
+  bool _hasSocialLinks() =>
+      club.websiteUrl.isNotEmpty ||
+      club.linkedinUrl.isNotEmpty ||
+      club.instagramUrl.isNotEmpty ||
+      club.email.isNotEmpty;
 
-  double _memberListHeight() {
-    if (_availableYears.isEmpty) return 0;
-    final max = _availableYears
-        .map((y) => _membersForYear(y).length)
-        .reduce((a, b) => a > b ? a : b);
-    return (max * 52.0 + 32).clamp(100, 520);
-  }
-
-  bool _hasSocialLinks() {
-    final c = widget.club;
-    return c.websiteUrl.isNotEmpty ||
-        c.linkedinUrl.isNotEmpty ||
-        c.instagramUrl.isNotEmpty ||
-        c.email.isNotEmpty;
+  void _showMembersSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _MembersBottomSheet(members: club.members),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final club = widget.club;
-
     return CustomScrollView(
       slivers: [
-        // ── App bar ──────────────────────────────
+        // ── Collapsible App Bar ───────────────────
         SliverAppBar(
           expandedHeight: 200,
           pinned: true,
@@ -155,17 +111,16 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
             background: Stack(
               fit: StackFit.expand,
               children: [
-                // Banner image
+                // Banner with gradient fallback
                 club.bannerUrl.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: club.bannerUrl,
                         fit: BoxFit.cover,
                         errorWidget: (_, __, ___) =>
-                            Container(color: Colors.black87),
+                            _BannerFallback(clubName: club.name),
                       )
-                    : Container(color: Colors.black87),
+                    : _BannerFallback(clubName: club.name),
 
-                // Gradient overlay
                 const DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -176,7 +131,6 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                   ),
                 ),
 
-                // Teal accent bar at bottom of banner
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -184,7 +138,6 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                   child: Container(height: 4, color: const Color(0xFF26C6DA)),
                 ),
 
-                // Club logo
                 Positioned(
                   bottom: 12,
                   left: 16,
@@ -195,31 +148,26 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
           ),
         ),
 
-        // ── Body content ─────────────────────────
+        // ── Scrollable content ────────────────────
         SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-
-              // Club name
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name
+                Text(
                   club.name,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              // Description
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                // Description
+                Text(
                   club.description,
                   style: TextStyle(
                     fontSize: 14,
@@ -227,38 +175,39 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
                     height: 1.5,
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
-
-              // Key Members card
-              _buildKeyMembers(club),
-
-              const SizedBox(height: 24),
-
-              // Recent Projects
-              if (club.projects.isNotEmpty) ...[
-                _buildRecentProjects(club.projects),
                 const SizedBox(height: 24),
+
+                // Key Members
+                _buildKeyMembers(),
+
+                const SizedBox(height: 24),
+
+                // Recent Projects
+                if (club.projects.isNotEmpty) ...[
+                  _buildRecentProjects(),
+                  const SizedBox(height: 24),
+                ],
+
+                // Members button → opens bottom sheet
+                if (club.members.isNotEmpty) ...[
+                  _buildMembersButton(context),
+                  const SizedBox(height: 32),
+                ],
+
+                // Social links with real image assets
+                if (_hasSocialLinks()) _buildSocialLinks(context),
               ],
-
-              // Members list with year tabs
-              if (_availableYears.isNotEmpty) _buildMembersList(),
-
-              // Social links
-              if (_hasSocialLinks()) _buildSocialLinks(club),
-
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  // ── Key Members ──────────────────────────────
+  // ── Key Members card ─────────────────────────
 
-  Widget _buildKeyMembers(ClubDetail club) {
+  Widget _buildKeyMembers() {
     final rows = [
       _LabelValue('FIC', club.fic),
       _LabelValue('Co-FIC', club.coFic),
@@ -266,192 +215,53 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
       _LabelValue('Tech Coordinator', club.techCoordinator),
     ].where((r) => r.value.isNotEmpty).toList();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Key Members',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F7FA),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Column(
-              children: rows.map((r) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 130,
-                        child: Text(
-                          r.label,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF1565C0),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          r.value,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Recent Projects ──────────────────────────
-
-  Widget _buildRecentProjects(List<ClubProject> projects) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Recent Projects',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+        const Text(
+          'Key Members',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: projects.length,
-            itemBuilder: (_, i) => _ProjectCard(project: projects[i]),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ── Members list with year tabs ───────────────
-
-  Widget _buildMembersList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 10),
-          child: Text(
-            'Club Members',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
+        const SizedBox(height: 10),
         Container(
-          color: Colors.white,
-          child: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            labelColor: const Color(0xFF1565C0),
-            unselectedLabelColor: Colors.grey,
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-            unselectedLabelStyle: const TextStyle(fontSize: 12),
-            indicatorColor: const Color(0xFF1565C0),
-            indicatorWeight: 2,
-            tabs: _availableYears
-                .map((y) => Tab(text: y.toUpperCase()))
-                .toList(),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF5F7FA),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
           ),
-        ),
-        const Divider(height: 1, color: Color(0xFFE0E0E0)),
-        SizedBox(
-          height: _memberListHeight(),
-          child: TabBarView(
-            controller: _tabController,
-            children: _availableYears.map((year) {
-              final members = _membersForYear(year);
-              return ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            children: rows.map((r) {
+              return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
-                itemCount: members.length,
-                separatorBuilder: (_, __) =>
-                    const Divider(height: 1, color: Color(0xFFF0F0F0)),
-                itemBuilder: (_, i) {
-                  final m = members[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    child: Row(
-                      children: [
-                        // Avatar with initials
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: const Color(
-                            0xFF1565C0,
-                          ).withOpacity(0.1),
-                          child: Text(
-                            m.studentName.isNotEmpty
-                                ? m.studentName[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1565C0),
-                            ),
-                          ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 130,
+                      child: Text(
+                        r.label,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1565C0),
                         ),
-                        const SizedBox(width: 12),
-                        // Name + Student ID
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                m.studentName,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                m.studentID,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  );
-                },
+                    Expanded(
+                      child: Text(
+                        r.value,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }).toList(),
           ),
@@ -460,38 +270,305 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
     );
   }
 
+  // ── Recent Projects horizontal list ──────────
+
+  Widget _buildRecentProjects() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Recent Projects',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: club.projects.length,
+            itemBuilder: (_, i) => _ProjectCard(project: club.projects[i]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Members button ────────────────────────────
+
+  Widget _buildMembersButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showMembersSheet(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F7FA),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1565C0).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.people_alt_outlined,
+                color: Color(0xFF1565C0),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Club Members',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFF1565C0),
+              size: 22,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ── Social links ─────────────────────────────
 
-  Widget _buildSocialLinks(ClubDetail club) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildSocialLinks(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Connect With Us',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (club.websiteUrl.isNotEmpty)
+              _SocialImageIcon(
+                assetPath: 'assets/logos/ic_website.png',
+                label: 'Website',
+                onTap: () => _launch(club.websiteUrl),
+              ),
+            if (club.linkedinUrl.isNotEmpty)
+              _SocialImageIcon(
+                assetPath: 'assets/logos/ic_linkedin.png',
+                label: 'LinkedIn',
+                onTap: () => _launch(club.linkedinUrl),
+              ),
+            if (club.instagramUrl.isNotEmpty)
+              _SocialImageIcon(
+                assetPath: 'assets/logos/ic_instagram.png',
+                label: 'Instagram',
+                onTap: () => _launch(club.instagramUrl),
+              ),
+            if (club.email.isNotEmpty)
+              _SocialImageIcon(
+                assetPath: 'assets/logos/ic_envelope.png',
+                label: 'Email',
+                onTap: () => _launch('mailto:${club.email}'),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// MEMBERS BOTTOM SHEET
+// ─────────────────────────────────────────────
+
+class _MembersBottomSheet extends StatefulWidget {
+  final List<ClubMember> members;
+  const _MembersBottomSheet({required this.members});
+
+  @override
+  State<_MembersBottomSheet> createState() => _MembersBottomSheetState();
+}
+
+class _MembersBottomSheetState extends State<_MembersBottomSheet>
+    with SingleTickerProviderStateMixin {
+  static const _allYears = [
+    '1st Year',
+    '2nd Year',
+    '3rd Year',
+    '4th Year (Final Year)',
+    '5th Year (Super Final)',
+  ];
+
+  late final List<String> _availableYears;
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _availableYears = _allYears
+        .where((y) => widget.members.any((m) => m.year == y))
+        .toList();
+    _tabController = TabController(
+      length: _availableYears.isEmpty ? 1 : _availableYears.length,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  List<ClubMember> _membersForYear(String year) =>
+      widget.members.where((m) => m.year == year).toList();
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Container(
+      height: screenHeight * 0.80,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
         children: [
-          if (club.websiteUrl.isNotEmpty)
-            _SocialIcon(
-              icon: Icons.language,
-              color: const Color(0xFF26C6DA),
-              onTap: () => _launch(club.websiteUrl),
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 4),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
             ),
-          if (club.linkedinUrl.isNotEmpty)
-            _SocialIcon(
-              icon: Icons.work_outline,
-              color: const Color(0xFF0A66C2),
-              onTap: () => _launch(club.linkedinUrl),
+          ),
+
+          // Header row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                const Text(
+                  'Club Members',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          if (club.instagramUrl.isNotEmpty)
-            _SocialIcon(
-              icon: Icons.camera_alt_outlined,
-              color: const Color(0xFFE1306C),
-              onTap: () => _launch(club.instagramUrl),
+          ),
+
+          const Divider(height: 1),
+
+          // Year tabs
+          if (_availableYears.isNotEmpty)
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              labelColor: const Color(0xFF1565C0),
+              unselectedLabelColor: Colors.grey,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: const TextStyle(fontSize: 12),
+              indicatorColor: const Color(0xFF1565C0),
+              indicatorWeight: 2,
+              tabs: _availableYears
+                  .map((y) => Tab(text: y.toUpperCase()))
+                  .toList(),
             ),
-          if (club.email.isNotEmpty)
-            _SocialIcon(
-              icon: Icons.email_outlined,
-              color: const Color(0xFF26C6DA),
-              onTap: () => _launch('mailto:${club.email}'),
-            ),
+
+          const Divider(height: 1, color: Color(0xFFE0E0E0)),
+
+          // Member list — scrollable inside the sheet
+          Expanded(
+            child: _availableYears.isEmpty
+                ? const Center(child: Text('No members found.'))
+                : TabBarView(
+                    controller: _tabController,
+                    children: _availableYears.map((year) {
+                      final members = _membersForYear(year);
+                      return ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        itemCount: members.length,
+                        separatorBuilder: (_, __) =>
+                            const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                        itemBuilder: (_, i) {
+                          final m = members[i];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: const Color(
+                                    0xFF1565C0,
+                                  ).withOpacity(0.1),
+                                  child: Text(
+                                    m.studentName.isNotEmpty
+                                        ? m.studentName[0].toUpperCase()
+                                        : '?',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1565C0),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        m.studentName,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        m.studentID,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[500],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
+          ),
         ],
       ),
     );
@@ -499,7 +576,85 @@ class _ClubDetailBodyState extends State<_ClubDetailBody>
 }
 
 // ─────────────────────────────────────────────
-// REUSABLE SMALL WIDGETS
+// SOCIAL IMAGE ICON
+// ─────────────────────────────────────────────
+
+class _SocialImageIcon extends StatelessWidget {
+  final String assetPath;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SocialImageIcon({
+    required this.assetPath,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(assetPath, width: 26, height: 26),
+            // const SizedBox(height: 5),
+            // Text(
+            //   label,
+            //   style: TextStyle(
+            //     fontSize: 9,
+            //     color: Colors.grey[600],
+            //     fontWeight: FontWeight.w500,
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// BANNER FALLBACK
+// ─────────────────────────────────────────────
+
+class _BannerFallback extends StatelessWidget {
+  final String clubName;
+  const _BannerFallback({required this.clubName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1565C0), Color(0xFF1E88E5), Color(0xFF26C6DA)],
+        ),
+      ),
+      child: Center(
+        child: Opacity(
+          opacity: 0.18,
+          child: Text(
+            clubName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// CLUB LOGO
 // ─────────────────────────────────────────────
 
 class _ClubLogo extends StatelessWidget {
@@ -530,6 +685,10 @@ class _ClubLogo extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
+// PROJECT CARD
+// ─────────────────────────────────────────────
+
 class _ProjectCard extends StatelessWidget {
   final ClubProject project;
   const _ProjectCard({required this.project});
@@ -554,7 +713,6 @@ class _ProjectCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail on the left
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(12),
@@ -586,8 +744,6 @@ class _ProjectCard extends StatelessWidget {
                     ),
             ),
           ),
-
-          // Title + description on the right
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -625,37 +781,8 @@ class _ProjectCard extends StatelessWidget {
   }
 }
 
-class _SocialIcon extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SocialIcon({
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withOpacity(0.12),
-        ),
-        child: Icon(icon, color: color, size: 22),
-      ),
-    );
-  }
-}
-
 // ─────────────────────────────────────────────
-// PRIVATE HELPER
+// LABEL-VALUE HELPER
 // ─────────────────────────────────────────────
 
 class _LabelValue {
