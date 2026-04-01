@@ -17,7 +17,6 @@ class TechClubScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => Injector.get<ClubBloc>()..add(LoadClubsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.grey[100], // Light grey background
         appBar: AppBar(
           title: const Text('Tech Clubs'),
           centerTitle: true,

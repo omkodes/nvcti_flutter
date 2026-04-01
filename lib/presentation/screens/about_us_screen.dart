@@ -7,7 +7,6 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('About Us'),
         centerTitle: true,
@@ -21,12 +20,12 @@ class AboutUsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "NVCTI",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
@@ -43,7 +42,6 @@ class AboutUsScreen extends StatelessWidget {
 
             Card(
               margin: const EdgeInsets.symmetric(vertical: 8.0),
-              color: Colors.white,
               elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -58,12 +56,12 @@ class AboutUsScreen extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "Shri Naresh Vashisht",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -77,11 +75,11 @@ class AboutUsScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "Pioneering the setup of our Innovation Cell, our distinguished alumni have been instrumental in fostering a culture of innovation and entrepreneurship.",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.3,
                       ),
                       textAlign: TextAlign.center,
@@ -93,7 +91,6 @@ class AboutUsScreen extends StatelessWidget {
 
             Card(
               margin: const EdgeInsets.symmetric(vertical: 8.0),
-              color: Colors.white,
               elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -108,12 +105,12 @@ class AboutUsScreen extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "Prof. Sukumar Mishra",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -127,11 +124,11 @@ class AboutUsScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "Welcome to the Innovation Cell. Our goal is to foster creativity, encourage research, and support students in turning ideas into reality.",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.3,
                       ),
                       textAlign: TextAlign.center,
@@ -144,14 +141,14 @@ class AboutUsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Administration Title
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Administration",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -226,7 +223,6 @@ class _AdminCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(8.0),
-      color: Colors.white,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -244,19 +240,21 @@ class _AdminCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               designation,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey,
               ),
               textAlign: TextAlign.center,
             ),

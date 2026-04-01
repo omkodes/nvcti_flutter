@@ -34,7 +34,6 @@ class ProfileScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           backgroundColor: AppTheme.primaryBlue,
           title: const Text(
@@ -98,8 +97,11 @@ class ProfileScreen extends StatelessWidget {
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
-                              border: Border.all(color: Colors.white, width: 4),
+                              color: Theme.of(context).cardColor,
+                              border: Border.all(
+                                color: Theme.of(context).cardColor,
+                                width: 4,
+                              ),
                             ),
                             child: CircleAvatar(
                               radius: 56,
@@ -124,7 +126,6 @@ class ProfileScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Card(
-                      color: Colors.white,
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -137,19 +138,16 @@ class ProfileScreen extends StatelessWidget {
                             const Divider(
                               height: 24,
                               thickness: 1,
-                              color: Color(0xFFCCCCCC),
                             ),
                             _buildInfoRow('Email:', userEmail),
                             const Divider(
                               height: 24,
                               thickness: 1,
-                              color: Color(0xFFCCCCCC),
                             ),
                             _buildInfoRow('Admission No:', userAdmNo),
                             const Divider(
                               height: 24,
                               thickness: 1,
-                              color: Color(0xFFCCCCCC),
                             ),
                             _buildInfoRow('Phone:', userContact),
                           ],
@@ -210,7 +208,9 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.red.shade900
+                              : Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -231,31 +231,38 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.black)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final labelColor = isDark ? Colors.grey[400]! : const Color(0xFF757575);
+        final valueColor = isDark ? Colors.white : const Color(0xFF212121);
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontSize: 14, color: labelColor)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                value,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.cardColor,
         title: const Text("Logout"),
         content: const Text("Are you sure you want to logout?"),
         actions: [
@@ -268,7 +275,9 @@ class ProfileScreen extends StatelessWidget {
               Navigator.pop(ctx);
               context.read<AuthBloc>().add(LogoutRequested());
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark ? Colors.red.shade900 : Colors.black,
+            ),
             child: const Text("Logout", style: TextStyle(color: Colors.white)),
           ),
         ],

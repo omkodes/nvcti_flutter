@@ -26,7 +26,6 @@ class HistoryPage extends StatelessWidget {
       create: (context) => BookingBloc(getBookings: getBookingsUseCase,
           addBooking: addBookingUseCase, userRepository: userRepository)..add(FetchBookingsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("History"),
           centerTitle: true,

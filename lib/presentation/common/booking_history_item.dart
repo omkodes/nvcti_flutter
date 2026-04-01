@@ -39,7 +39,6 @@ class BookingHistoryItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(8),
       elevation: 2,
-      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -53,8 +52,8 @@ class BookingHistoryItem extends StatelessWidget {
                 Expanded(
                   child: Text(
                     item.resourceType,
-                    style: const TextStyle(
-                      color: Colors.black,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -91,9 +90,18 @@ class BookingHistoryItem extends StatelessWidget {
                     children: [
                       const Text("From", style: TextStyle(color: Color(0xFF757575), fontSize: 12)),
                       const SizedBox(height: 4),
-                      Text(item.resourceFromDate, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(item.resourceFromDate, style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      )),
                       const SizedBox(height: 2),
-                      Text(item.resourceFromTime, style: const TextStyle(color: Color(0xFF424242), fontSize: 13)),
+                      Text(item.resourceFromTime, style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : const Color(0xFF424242),
+                        fontSize: 13,
+                      )),
                     ],
                   ),
                 ),
@@ -108,9 +116,18 @@ class BookingHistoryItem extends StatelessWidget {
                     children: [
                       const Text("To", style: TextStyle(color: Color(0xFF757575), fontSize: 12)),
                       const SizedBox(height: 4),
-                      Text(item.resourceToDate, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(item.resourceToDate, style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      )),
                       const SizedBox(height: 2),
-                      Text(item.resourceToTime, style: const TextStyle(color: Color(0xFF424242), fontSize: 13)),
+                      Text(item.resourceToTime, style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : const Color(0xFF424242),
+                        fontSize: 13,
+                      )),
                     ],
                   ),
                 ),

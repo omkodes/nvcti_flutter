@@ -26,7 +26,6 @@ class AchievementsPage extends StatelessWidget {
           AchievementsBloc(getAchievements: useCase)
             ..add(FetchAchievementsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Achievements"),
           centerTitle: true,

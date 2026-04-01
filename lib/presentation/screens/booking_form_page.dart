@@ -174,7 +174,6 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Resource Booking"),
           centerTitle: true,
@@ -206,15 +205,23 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkInputFill
+                          : Colors.grey.shade50,
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.darkDivider
+                            : Colors.grey.shade300,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
                         value: _selectedResource,
-                        dropdownColor: Colors.white,
+                        dropdownColor: Theme.of(context).brightness == Brightness.dark
+                            ? AppTheme.darkInputFill
+                            : Colors.white,
                         icon: const Icon(
                           Icons.keyboard_arrow_down,
                           color: AppTheme.primaryBlue, //
@@ -347,18 +354,21 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
   // --- Widget Helpers ---
 
   InputDecoration _inputDecoration(String hint, IconData icon) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fillColor = isDark ? AppTheme.darkInputFill : Colors.grey.shade50;
+    final borderColor = isDark ? AppTheme.darkDivider : Colors.grey.shade300;
     return InputDecoration(
       hintText: hint,
       prefixIcon: Icon(icon, color: AppTheme.primaryBlue, size: 20),
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: fillColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -389,14 +399,17 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
     required TextEditingController controller,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool hasTime = controller.text.isNotEmpty;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       elevation: 0,
-      color: Colors.grey.shade50,
+      color: isDark ? AppTheme.darkInputFill : Colors.grey.shade50,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(
+          color: isDark ? AppTheme.darkDivider : Colors.grey.shade300,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
@@ -418,7 +431,9 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: hasTime ? FontWeight.bold : FontWeight.normal,
-                  color: hasTime ? AppTheme.textDark : Colors.grey,
+                  color: hasTime
+                      ? (isDark ? Colors.white : AppTheme.textDark)
+                      : Colors.grey,
                 ),
               ),
             ],

@@ -9,14 +9,13 @@ class MenuGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
       child: InkWell(
         onTap: () {
           context.push(item.route);
-          // Navigator.pushNamed(context, item.route);
         },
         borderRadius: BorderRadius.circular(12),
         child: Column(
@@ -27,7 +26,6 @@ class MenuGridCard extends StatelessWidget {
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                // Using Image.asset assuming you have the illustrations
                 child: Image.asset(item.imagePath, fit: BoxFit.contain),
               ),
             ),
@@ -36,9 +34,9 @@ class MenuGridCard extends StatelessWidget {
               flex: 1,
               child: Text(
                 item.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey, // Grey color as per screenshot text
+                  color: isDark ? Colors.grey[400] : Colors.grey,
                   fontWeight: FontWeight.w500,
                 ),
               ),

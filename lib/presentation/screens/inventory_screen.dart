@@ -6,6 +6,7 @@ import 'package:nvcti/bloc/events/inventory_event.dart';
 import 'package:nvcti/bloc/states/inventory_state.dart';
 import 'package:nvcti/presentation/common/inventory_card.dart';
 import 'package:nvcti/presentation/common/loading_card.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 import '../../core/di/injection_container.dart';
 
@@ -31,7 +32,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
       create: (context) =>
           Injector.get<InventoryBloc>()..add(LoadInventoryEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Inventory"),
           centerTitle: true,
@@ -46,19 +46,38 @@ class _InventoryScreenState extends State<InventoryScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkInputFill
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.darkDivider
+                        : Colors.grey.shade300,
+                  ),
                 ),
                 child: TextField(
                   controller: _searchController,
                   onChanged: (value) => setState(() {}),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Search Inventory...",
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[500]
+                          : Colors.grey[600],
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[500]
+                          : Colors.grey,
+                    ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
               ),

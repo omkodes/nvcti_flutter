@@ -8,7 +8,6 @@ class DeveloperInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Developer Contact'),
         centerTitle: true,
@@ -21,28 +20,30 @@ class DeveloperInfoScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             Text(
               "Meet the Team",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               "The minds behind the NVCTI application.",
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-            _DeveloperCard(
+            const _DeveloperCard(
               name: 'Siddharth Gorai',
               role: 'Team Lead',
               department: 'Petroleum Engineering',
@@ -52,7 +53,7 @@ class DeveloperInfoScreen extends StatelessWidget {
               email: '22je0951@iitism.ac.in',
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             Align(
               alignment: Alignment.centerLeft,
@@ -61,13 +62,13 @@ class DeveloperInfoScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-            _DeveloperCard(
+            const _DeveloperCard(
               name: 'Yashendra Awasthi',
               role: 'Developer',
               department: 'Integrated Applied Geology',
@@ -77,7 +78,7 @@ class DeveloperInfoScreen extends StatelessWidget {
               email: '24je1086@iitism.ac.in',
             ),
 
-            _DeveloperCard(
+            const _DeveloperCard(
               name: 'Omkar Sanap',
               role: 'Developer',
               department: 'Environmental Engineering',
@@ -123,7 +124,6 @@ class _DeveloperCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      color: Colors.white,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -140,10 +140,10 @@ class _DeveloperCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
             ),

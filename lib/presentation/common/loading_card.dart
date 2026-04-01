@@ -6,14 +6,19 @@ class LoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
-      elevation: 30,
+      elevation: isDark ? 8 : 16,
+      shadowColor: isDark ? Colors.black : AppTheme.primaryBlue.withOpacity(0.4),
       color: AppTheme.primaryBlue,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.white24, width: 1),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.white24,
+            width: 1,
+          ),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(

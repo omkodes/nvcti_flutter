@@ -12,6 +12,7 @@ import 'package:nvcti/data/repositories/club_detail_repository_impl.dart';
 import 'package:nvcti/domain/entities/club_detail.dart';
 import 'package:nvcti/domain/usecases/get_club_detail.dart';
 import 'package:nvcti/presentation/common/loading_card.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ClubDetailScreen extends StatelessWidget {
@@ -31,7 +32,6 @@ class ClubDetailScreen extends StatelessWidget {
           ClubDetailBloc(getClubDetail: useCase)
             ..add(LoadClubDetailEvent(clubId)),
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: BlocBuilder<ClubDetailBloc, ClubDetailState>(
           builder: (context, state) {
             if (state is ClubDetailLoading || state is ClubDetailInitial) {
@@ -179,7 +179,7 @@ class _ClubDetailBody extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Key Members
-                _buildKeyMembers(),
+                _buildKeyMembers(context),
 
                 const SizedBox(height: 24),
 
@@ -207,7 +207,7 @@ class _ClubDetailBody extends StatelessWidget {
 
   // ── Key Members card ─────────────────────────
 
-  Widget _buildKeyMembers() {
+  Widget _buildKeyMembers(BuildContext context) {
     final rows = [
       _LabelValue('FIC', club.fic),
       _LabelValue('Co-FIC', club.coFic),
@@ -215,6 +215,10 @@ class _ClubDetailBody extends StatelessWidget {
       _LabelValue('Tech Coordinator', club.techCoordinator),
     ].where((r) => r.value.isNotEmpty).toList();
 
+    if (rows.isEmpty) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -225,9 +229,11 @@ class _ClubDetailBody extends StatelessWidget {
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F7FA),
+            color: isDark ? AppTheme.darkInputFill : const Color(0xFFF5F7FA),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(
+              color: isDark ? AppTheme.darkDivider : Colors.grey.shade200,
+            ),
           ),
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
@@ -254,9 +260,9 @@ class _ClubDetailBody extends StatelessWidget {
                     Expanded(
                       child: Text(
                         r.value,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Colors.black87,
+                          color: isDark ? Colors.grey[300] : Colors.black87,
                         ),
                       ),
                     ),
@@ -296,14 +302,17 @@ class _ClubDetailBody extends StatelessWidget {
   // ── Members button ────────────────────────────
 
   Widget _buildMembersButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () => _showMembersSheet(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F7FA),
+          color: isDark ? AppTheme.darkInputFill : const Color(0xFFF5F7FA),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(
+            color: isDark ? AppTheme.darkDivider : Colors.grey.shade200,
+          ),
         ),
         child: Row(
           children: [
@@ -325,12 +334,12 @@ class _ClubDetailBody extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Club Members',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
                 ],
@@ -444,9 +453,9 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
 
     return Container(
       height: screenHeight * 0.80,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -544,10 +553,12 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
                                     children: [
                                       Text(
                                         m.studentName,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
@@ -695,16 +706,19 @@ class _ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 220,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? AppTheme.darkDivider : Colors.grey.shade200,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 import '../../bloc/bloc/projects_bloc.dart';
 import '../../bloc/events/projects_event.dart';
@@ -25,7 +26,6 @@ class ProjectsPage extends StatelessWidget {
       create: (context) =>
           ProjectsBloc(getProjects: useCase)..add(FetchProjectsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Projects"),
           centerTitle: true,
@@ -53,17 +53,36 @@ class ProjectsView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.darkInputFill
+                        : Colors.white,
                     borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkDivider
+                          : Colors.grey.shade300,
+                    ),
                   ),
                   child: TextField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "Search Projects...",
-                      prefixIcon: Icon(Icons.search),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[500]
+                            : Colors.grey[600],
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[500]
+                            : Colors.grey,
+                      ),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15),
                     ),
                     onChanged: (value) {
                       context.read<ProjectsBloc>().add(

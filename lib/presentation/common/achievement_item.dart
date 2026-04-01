@@ -11,7 +11,6 @@ class AchievementItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -64,7 +63,12 @@ class AchievementItem extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               achievement.description,
-              style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey[800],
+              ),
             ),
           ],
         ),

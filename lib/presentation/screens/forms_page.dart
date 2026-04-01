@@ -21,7 +21,6 @@ class FormsPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => FormsBloc(getForms: useCase)..add(FetchFormsEvent()),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Forms"),
           centerTitle: true,

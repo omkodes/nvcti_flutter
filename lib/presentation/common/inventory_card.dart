@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nvcti/domain/entities/inventory_item.dart';
+import 'package:nvcti/presentation/common/theme.dart';
 
 class InventoryCard extends StatelessWidget {
   final InventoryItem item;
@@ -8,16 +9,19 @@ class InventoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: isDark ? AppTheme.darkDivider : Colors.grey.shade300,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -34,10 +38,10 @@ class InventoryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   item.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
               ),
@@ -53,8 +57,8 @@ class InventoryCard extends StatelessWidget {
             item.description,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
-              height: 1.4, // Improves readability of multi-line text
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
+              height: 1.4,
             ),
           ),
         ],

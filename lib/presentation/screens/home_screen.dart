@@ -53,7 +53,6 @@ class HomeScreen extends StatelessWidget {
       ),
 
       drawer: Drawer(
-        backgroundColor: Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
@@ -173,9 +172,16 @@ class HomeScreen extends StatelessWidget {
     String title,
     String route,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
       leading: Icon(icon, color: AppTheme.primaryBlue),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: isDark ? Colors.white : const Color(0xFF212121),
+        ),
+      ),
       onTap: () {
         Navigator.pop(context);
         context.push(route);
