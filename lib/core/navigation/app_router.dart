@@ -56,6 +56,13 @@ class AppRouter {
 
     routes: [
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/toto',
+        builder: (context, state) => Scaffold(
+          appBar: AppBar(title: const Text('Toto')),
+          body: const Center(child: Text('Toto Placeholder Screen')),
+        ),
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
