@@ -24,9 +24,9 @@ class HomeScreen extends StatelessWidget {
       route: '/resources',
     ),
     MenuItem(
-      title: 'Toto', // Placeholder for upcoming screen
-      imagePath: 'assets/logos/iv_forms.png', // Temporary placeholder icon
-      route: '/toto',
+      title: 'Forms',
+      imagePath: 'assets/logos/iv_forms.png',
+      route: '/forms',
     ),
   ];
 
@@ -95,12 +95,6 @@ class HomeScreen extends StatelessWidget {
                     Icons.emoji_events_outlined,
                     'Achievements',
                     '/achievements',
-                  ),
-                  _buildDrawerItem(
-                    context,
-                    Icons.assignment_outlined,
-                    'Forms',
-                    '/forms',
                   ),
                   const Divider(height: 32),
                   _buildDrawerItem(

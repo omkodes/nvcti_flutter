@@ -1,4 +1,4 @@
-package com.example.nvcti
+package com.iitism.nvctiv2
 
 import io.flutter.embedding.android.FlutterActivity
 

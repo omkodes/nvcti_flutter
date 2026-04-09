@@ -420,7 +420,7 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
     '2nd Year',
     '3rd Year',
     '4th Year (Final Year)',
-    '5th Year (Super Final)',
+    '5th Year',
   ];
 
   late final List<String> _availableYears;

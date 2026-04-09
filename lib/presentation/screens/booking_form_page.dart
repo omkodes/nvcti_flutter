@@ -184,7 +184,7 @@ class _ResourceBookingFormState extends State<ResourceBookingForm> {
           actions: [
             IconButton(
               icon: const Icon(Icons.history),
-              onPressed: () => context.go('/history'),
+              onPressed: () => context.push('/history'),
             ),
           ],
         ),
