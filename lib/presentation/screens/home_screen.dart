@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nvcti/core/theme_cubit.dart';
 import 'package:nvcti/domain/entities/menu_item.dart';
 import 'package:nvcti/presentation/common/menu_grid_card.dart';
 import 'package:nvcti/presentation/common/theme.dart';
@@ -32,6 +34,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -112,6 +115,55 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "APPEARANCE",
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 1.2,
+
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? Colors.white : const Color(0xFF212121),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  BlocBuilder<ThemeCubit, ThemeMode>(
+                    builder: (context, currentMode) {
+                      return Row(
+                        children: [
+                          _buildThemeOptionButton(
+                            context,
+                            "System",
+                            Icons.brightness_auto,
+                            ThemeMode.system,
+                            currentMode,
+                          ),
+                          _buildThemeOptionButton(
+                            context,
+                            "Light",
+                            Icons.light_mode,
+                            ThemeMode.light,
+                            currentMode,
+                          ),
+                          _buildThemeOptionButton(
+                            context,
+                            "Dark",
+                            Icons.dark_mode,
+                            ThemeMode.dark,
+                            currentMode,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -188,4 +240,72 @@ class HomeScreen extends StatelessWidget {
       },
     );
   }
+}
+
+Widget _buildThemeOptionButton(
+  BuildContext context,
+  String label,
+  IconData icon,
+  ThemeMode mode,
+  ThemeMode currentMode,
+) {
+  final isSelected = mode == currentMode;
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return Expanded(
+    child: GestureDetector(
+      onTap: () => context.read<ThemeCubit>().updateTheme(mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.primaryBlue
+              : (isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.grey.shade100),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected
+                ? AppTheme.primaryBlue
+                : (isDark ? Colors.white24 : Colors.grey.shade300),
+            width: 1.5,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppTheme.primaryBlue.withOpacity(0.25),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: isSelected
+                  ? Colors.white
+                  : (isDark ? Colors.white60 : Colors.grey.shade600),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white60 : Colors.grey.shade600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

@@ -10,7 +10,6 @@ import 'package:nvcti/presentation/common/loading_card.dart';
 import 'package:nvcti/presentation/common/theme.dart';
 
 import '../../core/di/injection_container.dart';
-import '../../core/theme_cubit.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -135,20 +134,11 @@ class ProfileScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             _buildInfoRow('Name:', userName),
-                            const Divider(
-                              height: 24,
-                              thickness: 1,
-                            ),
+                            const Divider(height: 24, thickness: 1),
                             _buildInfoRow('Email:', userEmail),
-                            const Divider(
-                              height: 24,
-                              thickness: 1,
-                            ),
+                            const Divider(height: 24, thickness: 1),
                             _buildInfoRow('Admission No:', userAdmNo),
-                            const Divider(
-                              height: 24,
-                              thickness: 1,
-                            ),
+                            const Divider(height: 24, thickness: 1),
                             _buildInfoRow('Phone:', userContact),
                           ],
                         ),
@@ -158,39 +148,38 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Card(
-                      color: Theme.of(context).cardColor,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: BlocBuilder<ThemeCubit, ThemeMode>(
-                        builder: (context, themeMode) {
-                          final isDark = themeMode == ThemeMode.dark;
-
-                          return SwitchListTile(
-                            activeColor: AppTheme.primaryBlue,
-                            title: const Text(
-                              "Dark Mode",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            value: isDark,
-                            onChanged: (value) {
-                              context.read<ThemeCubit>().toggleTheme(value);
-                            },
-                            secondary: Icon(
-                              isDark ? Icons.dark_mode : Icons.light_mode,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  //   child: Card(
+                  //     color: Theme.of(context).cardColor,
+                  //     elevation: 3,
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //     ),
+                  //     child: BlocBuilder<ThemeCubit, ThemeMode>(
+                  //       builder: (context, themeMode) {
+                  //         final isDark = themeMode == ThemeMode.dark;
+                  //
+                  //         return SwitchListTile(
+                  //           activeColor: AppTheme.primaryBlue,
+                  //           title: const Text(
+                  //             "Dark Mode",
+                  //             style: TextStyle(fontWeight: FontWeight.bold),
+                  //           ),
+                  //           value: isDark,
+                  //           onChanged: (value) {
+                  //             context.read<ThemeCubit>().toggleTheme(value);
+                  //           },
+                  //           secondary: Icon(
+                  //             isDark ? Icons.dark_mode : Icons.light_mode,
+                  //           ),
+                  //         );
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                  //
+                  // const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28.0),
                     child: SizedBox(
@@ -208,7 +197,8 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
                               ? Colors.red.shade900
                               : Colors.black,
                           shape: RoundedRectangleBorder(
