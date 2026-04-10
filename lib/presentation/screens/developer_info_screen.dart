@@ -50,7 +50,7 @@ class DeveloperInfoScreen extends StatelessWidget {
               batch: 'Batch of 2026',
               imagePath: 'assets/logos/iv_siddharth.jpeg',
               phone: '+91 8789185248',
-              email: '22je0951@iitism.ac.in',
+              email: 'goraisiddharth@gmail.com',
             ),
 
             const SizedBox(height: 16),
@@ -75,7 +75,7 @@ class DeveloperInfoScreen extends StatelessWidget {
               batch: 'Batch of 2029',
               imagePath: 'assets/logos/iv_yashendra.jpeg',
               phone: '+91 9236311195',
-              email: '24je1086@iitism.ac.in',
+              email: 'yashendraawasthi@gmail.com',
             ),
 
             const _DeveloperCard(
@@ -125,9 +125,7 @@ class _DeveloperCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -175,7 +173,10 @@ class _DeveloperCard extends StatelessWidget {
               onTap: () => _launchUrl('tel:$phone'),
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 16.0,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -195,32 +196,35 @@ class _DeveloperCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-          InkWell(
-            onTap: () => _launchUrl('mailto:$email'),
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.email, size: 18, color: Colors.blueGrey),
-                  const SizedBox(width: 8),
-                  Text(
-                    email,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.blueGrey,
-                      decoration: TextDecoration.underline,
+            InkWell(
+              onTap: () => _launchUrl('mailto:$email'),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 16.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.email, size: 18, color: Colors.blueGrey),
+                    const SizedBox(width: 8),
+                    Text(
+                      email,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.blueGrey,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
-                  ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-    ],
-    ),
-    ),
     );
   }
 }

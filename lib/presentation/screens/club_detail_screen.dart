@@ -111,7 +111,6 @@ class _ClubDetailBody extends StatelessWidget {
             background: Stack(
               fit: StackFit.expand,
               children: [
-                // Banner with gradient fallback
                 club.bannerUrl.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: club.bannerUrl,
@@ -155,7 +154,6 @@ class _ClubDetailBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Name
                 Text(
                   club.name,
                   style: const TextStyle(
@@ -166,7 +164,6 @@ class _ClubDetailBody extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Description
                 Text(
                   club.description,
                   style: TextStyle(
@@ -178,24 +175,20 @@ class _ClubDetailBody extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Key Members
                 _buildKeyMembers(context),
 
                 const SizedBox(height: 24),
 
-                // Recent Projects
                 if (club.projects.isNotEmpty) ...[
-                  _buildRecentProjects(),
+                  _buildRecentProjects(context),
                   const SizedBox(height: 24),
                 ],
 
-                // Members button → opens bottom sheet
                 if (club.members.isNotEmpty) ...[
                   _buildMembersButton(context),
                   const SizedBox(height: 32),
                 ],
 
-                // Social links with real image assets
                 if (_hasSocialLinks()) _buildSocialLinks(context),
               ],
             ),
@@ -278,7 +271,7 @@ class _ClubDetailBody extends StatelessWidget {
 
   // ── Recent Projects horizontal list ──────────
 
-  Widget _buildRecentProjects() {
+  Widget _buildRecentProjects(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -402,6 +395,332 @@ class _ClubDetailBody extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
+// PROJECT DETAIL DIALOG
+// ─────────────────────────────────────────────
+
+void _showProjectDetailDialog(BuildContext context, ClubProject project) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  showDialog(
+    context: context,
+    builder: (ctx) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppTheme.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Image header ──────────────────────────
+            if (project.imgUrl.isNotEmpty)
+              Stack(
+                children: [
+                  SizedBox(
+                    height: 200,
+                    width: double.infinity,
+                    child: CachedNetworkImage(
+                      imageUrl: project.imgUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Container(
+                        height: 200,
+                        // color: isDark
+                        //     ? AppTheme.darkInputFill
+                        //     : const Color(0xFFEEF2FF),
+                        color: const Color(0xFFEEF2FF),
+                        child: const Center(
+                          child: Icon(
+                            Icons.precision_manufacturing_outlined,
+                            color: Color(0xFF1565C0),
+                            size: 48,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Close button
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(ctx).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              // No image — show close button in top-right corner
+              Stack(
+                children: [
+                  SizedBox(
+                    height: 200,
+                    width: double.infinity,
+                    child: Container(
+                      height: 200,
+                      // color: isDark
+                      //     ? AppTheme.darkInputFill
+                      //     : const Color(0xFFEEF2FF),
+                      color: const Color(0xFFEEF2FF),
+                      child: const Center(
+                        child: Icon(
+                          Icons.precision_manufacturing_outlined,
+                          color: Color(0xFF1565C0),
+                          size: 48,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Close button
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(ctx).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.45),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+            // ── Content ───────────────────────────────
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Label chip
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1565C0).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'PROJECT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1565C0),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Title
+                    Text(
+                      project.title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Divider
+                    Divider(
+                      color: isDark
+                          ? AppTheme.darkDivider
+                          : Colors.grey.shade200,
+                      height: 1,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Full description
+                    Text(
+                      project.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isDark ? Colors.grey[300] : Colors.grey[700],
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+// ─────────────────────────────────────────────
+// PROJECT CARD  (with "see more" tap)
+// ─────────────────────────────────────────────
+
+class _ProjectCard extends StatelessWidget {
+  final ClubProject project;
+  const _ProjectCard({required this.project});
+
+  /// Returns true when the description overflows 2 lines inside the fixed
+  /// text width of the card (card width 220 - image 72 - padding 20 = 128 px).
+  bool _descriptionOverflows(BuildContext context) {
+    const maxLines = 2;
+    const textWidth = 128.0; // approx available width
+    final style = TextStyle(fontSize: 11, color: Colors.grey[700], height: 1.4);
+    final span = TextSpan(text: project.description, style: style);
+    final tp = TextPainter(
+      text: span,
+      maxLines: maxLines,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: textWidth);
+    return tp.didExceedMaxLines;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final overflows = _descriptionOverflows(context);
+
+    return GestureDetector(
+      onTap: () => _showProjectDetailDialog(context, project),
+      child: Container(
+        width: 220,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? AppTheme.darkDivider : Colors.grey.shade200,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Thumbnail ───────────────────────────
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
+              ),
+              child: SizedBox(
+                width: 72,
+                height: double.infinity,
+                child: project.imgUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: project.imgUrl,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Container(
+                          color: const Color(0xFFEEF2FF),
+                          child: const Icon(
+                            Icons.precision_manufacturing_outlined,
+                            color: Color(0xFF1565C0),
+                            size: 28,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: const Color(0xFFEEF2FF),
+                        child: const Icon(
+                          Icons.precision_manufacturing_outlined,
+                          color: Color(0xFF1565C0),
+                          size: 28,
+                        ),
+                      ),
+              ),
+            ),
+
+            // ── Text content ─────────────────────────
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      project.title,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Description — capped at 2 lines
+                    Expanded(
+                      child: Text(
+                        project.description,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.grey[400] : Colors.grey[700],
+                          height: 1.4,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+
+                    // "see more" link — only when content overflows
+                    if (overflows) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'see more',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(
+                            0xFF1565C0,
+                          ).withOpacity(isDark ? 0.85 : 1.0),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
 // MEMBERS BOTTOM SHEET
 // ─────────────────────────────────────────────
 
@@ -459,7 +778,6 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
       ),
       child: Column(
         children: [
-          // Handle bar
           Container(
             margin: const EdgeInsets.only(top: 12, bottom: 4),
             width: 40,
@@ -470,7 +788,6 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
             ),
           ),
 
-          // Header row
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
@@ -485,7 +802,6 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
 
           const Divider(height: 1),
 
-          // Year tabs
           if (_availableYears.isNotEmpty)
             TabBar(
               controller: _tabController,
@@ -507,7 +823,6 @@ class _MembersBottomSheetState extends State<_MembersBottomSheet>
 
           const Divider(height: 1, color: Color(0xFFE0E0E0)),
 
-          // Member list — scrollable inside the sheet
           Expanded(
             child: _availableYears.isEmpty
                 ? const Center(child: Text('No members found.'))
@@ -609,18 +924,7 @@ class _SocialImageIcon extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(assetPath, width: 26, height: 26),
-            // const SizedBox(height: 5),
-            // Text(
-            //   label,
-            //   style: TextStyle(
-            //     fontSize: 9,
-            //     color: Colors.grey[600],
-            //     fontWeight: FontWeight.w500,
-            //   ),
-            // ),
-          ],
+          children: [Image.asset(assetPath, width: 26, height: 26)],
         ),
       ),
     );
@@ -691,105 +995,6 @@ class _ClubLogo extends StatelessWidget {
                     const Icon(Icons.groups, size: 36, color: Colors.grey),
               )
             : const Icon(Icons.groups, size: 36, color: Colors.grey),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// PROJECT CARD
-// ─────────────────────────────────────────────
-
-class _ProjectCard extends StatelessWidget {
-  final ClubProject project;
-  const _ProjectCard({required this.project});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      width: 220,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? AppTheme.darkDivider : Colors.grey.shade200,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              bottomLeft: Radius.circular(12),
-            ),
-            child: SizedBox(
-              width: 72,
-              height: double.infinity,
-              child: project.imgUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: project.imgUrl,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => Container(
-                        color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.precision_manufacturing_outlined,
-                          color: Colors.grey,
-                          size: 28,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      color: const Color(0xFFEEF2FF),
-                      child: const Icon(
-                        Icons.precision_manufacturing_outlined,
-                        color: Color(0xFF1565C0),
-                        size: 28,
-                      ),
-                    ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    project.title,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Expanded(
-                    child: Text(
-                      project.description,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[700],
-                        height: 1.4,
-                      ),
-                      overflow: TextOverflow.fade,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
