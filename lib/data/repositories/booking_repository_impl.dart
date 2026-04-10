@@ -6,7 +6,7 @@ import '../../domain/repositories/booking_repository.dart';
 import '../models/booking_history_model.dart';
 
 class BookingRepositoryImpl implements BookingRepository {
-  final String webAppUrl = "https://script.google.com/macros/s/AKfycbyoj5akEkcNPi89vcTLtygu5hc5VyBGFHd8ADyJl2LQos5jB2GjmbPH02QScEixdlax/exec"; // Note: Google Apps Script usually needs '/exec' at the end for GET/POST
+  final String webAppUrl = "https://script.google.com/macros/s/AKfycbyoj5akEkcNPi89vcTLtygu5hc5VyBGFHd8ADyJl2LQos5jB2GjmbPH02QScEixdlax/exec";
 
   @override
   Future<List<BookingHistory>> getBookings() async {
@@ -33,16 +33,20 @@ class BookingRepositoryImpl implements BookingRepository {
   @override
   Future<String> addBooking(BookingRequest request) async {
     try {
-      final response = await http.post(
-        Uri.parse(webAppUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(request.toJson()),
-      );
+      var req = http.Request('POST', Uri.parse(webAppUrl))
+        ..headers['Content-Type'] = 'application/json'
+        ..body = jsonEncode(request.toJson())
+        ..followRedirects = false;
 
-      if (response.statusCode == 200) {
+      var client = http.Client();
+      var streamedResponse = await client.send(req);
+      var response = await http.Response.fromStream(streamedResponse);
+      client.close();
+
+      if (response.statusCode == 200 || response.statusCode == 302) {
         return "Request generated";
       } else {
-        throw Exception("Failed: ${response.body}");
+        throw Exception("Failed with status ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
       throw Exception("API call failed: $e");

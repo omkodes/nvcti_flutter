@@ -30,7 +30,7 @@ class FormItem extends StatelessWidget {
           ),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.drive_file_move_outline, color: Colors.blue),
+          icon: const Icon(Icons.arrow_downward_rounded, color: Colors.blue),
           onPressed: () {
             if (form.downloadLink.isNotEmpty) {
               _launchUrl(form.downloadLink);
